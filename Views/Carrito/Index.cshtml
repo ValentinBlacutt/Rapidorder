@@ -1,0 +1,409 @@
+﻿@model Restaurante.Models.Carrito
+@{
+    ViewData["Title"] = "Carrito de Compras";
+}
+<link rel="stylesheet" href="~/css/Carrito.css" />
+
+<div class="carrito-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <h2 class="mb-0">
+            <i class="fas fa-shopping-cart"></i>
+            Tu Carrito de Compras
+            @if (Model?.Items != null && Model.Items.Any())
+            {
+                <span class="items-badge">@Model.Items.Count @(Model.Items.Count == 1 ? "item" : "items")</span>
+            }
+        </h2>
+
+    </div>
+</div>
+
+@if (Model?.Items == null || !Model.Items.Any())
+{
+    <div class="carrito-vacio">
+        <i class="fas fa-shopping-cart fa-5x"></i>
+        <h3>Tu carrito está vacío</h3>
+        <p class="text-muted">¡Es hora de llenarlo con deliciosos productos!</p>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary" style="padding: 15px 40px; font-size: 1.1rem;">
+            <i class="fas fa-utensils"></i> Explorar Menú
+        </a>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card carrito-items-card">
+                <div class="card-header">
+                    <h5>
+                        <i class="fas fa-list"></i> Items en el Carrito
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        var item = Model.Items[i];
+                        var tienePersonalizacion = !string.IsNullOrEmpty(item.Notas) && item.Notas != "Sin personalización";
+                        var tienePrecioEspecial = item.PrecioUnitario != (item.Producto?.Precio ?? item.Combo?.Precio ?? 0);
+
+                        <div class="carrito-item row align-items-center" data-item-index="@i">
+                            <div class="col-md-2 col-3">
+                                <div class="item-imagen">
+                                    <img src="@(item.Producto?.ImagenUrl ?? item.Combo?.ImagenUrl ?? "/images/placeholder.jpg")"
+                                         alt="@(item.Producto?.Nombre ?? item.Combo?.Nombre)">
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-9 col-lg-4">
+                                <h6 class="item-titulo">@(item.Producto?.Nombre ?? item.Combo?.Nombre)</h6>
+                                <p class="item-descripcion mb-2">@(item.Producto?.Descripcion ?? item.Combo?.Descripcion)</p>
+
+                                @if (tienePersonalizacion || tienePrecioEspecial)
+                                {
+                                    <button class="btn btn-ver-personalizacion btn-sm" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#personalizacion-@i"
+                                            aria-expanded="false">
+                                        <i class="fas fa-eye"></i> Ver personalización
+                                    </button>
+
+                                    <div class="collapse mt-2" id="personalizacion-@i">
+                                        <div class="personalizacion-detalle">
+                                            @if (tienePersonalizacion)
+                                            {
+                                                <div class="personalizacion-item">
+                                                    <i class="fas fa-check-circle text-success"></i>
+                                                    <strong>Personalización:</strong>
+                                                    <p class="mb-0">@item.Notas</p>
+                                                </div>
+                                            }
+                                            @if (tienePrecioEspecial)
+                                            {
+                                                <div class="personalizacion-item">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <strong>Precio especial aplicado</strong>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-3 col-6 mt-3 mt-md-0">
+                                <div class="input-group cantidad-control">
+                                    <button class="btn btn-cantidad btn-decrementar"
+                                            data-item-index="@i"
+                                            data-cantidad="@(item.Cantidad - 1)"
+                                            type="button">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" class="form-control text-center cantidad-display" value="@item.Cantidad" readonly>
+                                    <button class="btn btn-cantidad btn-incrementar"
+                                            data-item-index="@i"
+                                            data-cantidad="@(item.Cantidad + 1)"
+                                            type="button">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4 mt-3 mt-md-0">
+                                <div class="item-precio">
+                                    <h6 class="precio-subtotal">S/. @item.Subtotal.ToString("0.00")</h6>
+                                    <small>S/. @item.PrecioUnitario.ToString("0.00") c/u</small>
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-2 mt-3 mt-md-0 text-end">
+                                <button class="btn btn-eliminar eliminar-item" data-item-index="@i">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-center bg-light">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-link text-primary">
+                        <i class="fas fa-plus-circle"></i> Agregar más productos al carrito
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card resumen-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-receipt"></i> Resumen del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="resumen-linea">
+                        <span><i class="fas fa-shopping-bag"></i> Subtotal:</span>
+                        <span id="subtotal-display">S/. @Model.Total.ToString("0.00")</span>
+                    </div>
+                    <div class="resumen-linea">
+                        <span><i class="fas fa-percentage"></i> Impuestos (18%):</span>
+                        <span id="impuestos-display">S/. @((Model.Total * 0.18m).ToString("0.00"))</span>
+                    </div>
+
+                    <div class="resumen-total d-flex justify-content-between align-items-center">
+                        <strong><i class="fas fa-money-bill-wave"></i> Total:</strong>
+                        <strong id="total-display">S/. @((Model.Total * 1.18m).ToString("0.00"))</strong>
+                    </div>
+
+                    <a href="@Url.Action("Checkout", "Pedido")" class="btn btn-checkout">
+                        <i class="fas fa-credit-card"></i> Proceder al Pago
+                    </a>
+
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-seguir-comprando">
+                        <i class="fas fa-plus-circle"></i> Seguir Comprando
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            let procesando = false;
+
+            // Cambiar texto del botón al expandir/colapsar
+            $('.btn-ver-personalizacion').on('click', function() {
+                var $btn = $(this);
+                var $icon = $btn.find('i');
+
+                setTimeout(function() {
+                    var isExpanded = $btn.attr('aria-expanded') === 'true';
+                    if (isExpanded) {
+                        $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                        $btn.html('<i class="fas fa-eye-slash"></i> Ocultar personalización');
+                    } else {
+                        $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                        $btn.html('<i class="fas fa-eye"></i> Ver personalización');
+                    }
+                }, 10);
+            });
+
+            $('.btn-cantidad').click(function() {
+                if (procesando) return;
+
+                var $btn = $(this);
+                var itemIndex = $btn.data('item-index');
+                var cantidad = $btn.data('cantidad');
+                var $item = $btn.closest('.carrito-item');
+
+                if (cantidad < 1) {
+                    if (confirm('¿Deseas eliminar este producto del carrito?')) {
+                        eliminarItem(itemIndex);
+                    }
+                    return;
+                }
+
+                procesando = true;
+                $btn.prop('disabled', true);
+
+                var precioUnitario = parseFloat($item.find('small').text().replace('S/. ', '').replace(' c/u', ''));
+                var nuevoSubtotal = precioUnitario * cantidad;
+
+                $item.find('.cantidad-display').val(cantidad);
+                $item.find('.precio-subtotal').text('S/. ' + nuevoSubtotal.toFixed(2));
+
+                $item.find('.btn-decrementar').data('cantidad', cantidad - 1);
+                $item.find('.btn-incrementar').data('cantidad', cantidad + 1);
+
+                $.ajax({
+                    url: '/Carrito/ActualizarCantidad',
+                    type: 'POST',
+                    data: { itemIndex: itemIndex, cantidad: cantidad },
+                    success: function(response) {
+                        if (response.success) {
+                            actualizarResumen();
+
+                            if (typeof window.actualizarCarrito === 'function') {
+                                window.actualizarCarrito();
+                            }
+
+                            $item.addClass('item-actualizado');
+                            setTimeout(function() {
+                                $item.removeClass('item-actualizado');
+                            }, 500);
+                        } else {
+                            location.reload();
+                        }
+                    },
+                    error: function() {
+                        alert('Error al actualizar la cantidad. Por favor, recarga la página.');
+                        location.reload();
+                    },
+                    complete: function() {
+                        procesando = false;
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+
+            $('.eliminar-item').click(function() {
+                if (procesando) return;
+
+                var itemIndex = $(this).data('item-index');
+
+                if (confirm('¿Estás seguro de que quieres eliminar este producto del carrito?')) {
+                    eliminarItem(itemIndex);
+                }
+            });
+
+            function eliminarItem(itemIndex) {
+                if (procesando) return;
+                procesando = true;
+
+                var $item = $('.carrito-item[data-item-index="' + itemIndex + '"]');
+
+                $item.css('opacity', '0.5');
+
+                $.ajax({
+                    url: '/Carrito/EliminarItem',
+                    type: 'POST',
+                    data: { itemIndex: itemIndex },
+                    success: function(response) {
+                        if (response.success) {
+                            $item.slideUp(300, function() {
+                                $(this).remove();
+
+                                if ($('.carrito-item').length === 0) {
+                                    location.reload();
+                                } else {
+                                    $('.carrito-item').each(function(index) {
+                                        $(this).attr('data-item-index', index);
+                                        $(this).find('.btn-cantidad, .eliminar-item').data('item-index', index);
+                                        $(this).find('.btn-cantidad, .eliminar-item').attr('data-item-index', index);
+                                    });
+
+                                    actualizarResumen();
+
+                                    if (typeof window.actualizarCarrito === 'function') {
+                                        window.actualizarCarrito();
+                                    }
+                                }
+                            });
+                        } else {
+                            alert('Error al eliminar el producto.');
+                            $item.css('opacity', '1');
+                        }
+                    },
+                    error: function() {
+                        alert('Error al eliminar el producto. Por favor, intenta nuevamente.');
+                        $item.css('opacity', '1');
+                    },
+                    complete: function() {
+                        procesando = false;
+                    }
+                });
+            }
+
+            function actualizarResumen() {
+                var subtotal = 0;
+
+                $('.carrito-item').each(function() {
+                    var precioText = $(this).find('.precio-subtotal').text();
+                    var precio = parseFloat(precioText.replace('S/. ', ''));
+                    if (!isNaN(precio)) {
+                        subtotal += precio;
+                    }
+                });
+
+                var impuestos = subtotal * 0.18;
+                var total = subtotal + impuestos;
+
+                $('#subtotal-display').text('S/. ' + subtotal.toFixed(2));
+                $('#impuestos-display').text('S/. ' + impuestos.toFixed(2));
+                $('#total-display').text('S/. ' + total.toFixed(2));
+
+                var totalItems = $('.carrito-item').length;
+                $('.items-badge').text(totalItems + (totalItems === 1 ? ' item' : ' items'));
+            }
+
+            var style = document.createElement('style');
+            style.textContent = `
+                .item-actualizado {
+                    animation: pulse-success 0.5s ease;
+                }
+                @@keyframes pulse-success {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.02); background-color: #d4edda; }
+                }
+
+                .btn-ver-personalizacion {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    border: none;
+                    padding: 6px 14px;
+                    border-radius: 8px;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+                }
+
+                .btn-ver-personalizacion:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                    color: white;
+                }
+
+                .btn-ver-personalizacion i {
+                    margin-right: 5px;
+                }
+
+                .personalizacion-detalle {
+                    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+                    border-left: 3px solid #667eea;
+                    padding: 12px 15px;
+                    border-radius: 8px;
+                    margin-top: 8px;
+                }
+
+                .personalizacion-item {
+                    margin-bottom: 8px;
+                }
+
+                .personalizacion-item:last-child {
+                    margin-bottom: 0;
+                }
+
+                .personalizacion-item i {
+                    margin-right: 8px;
+                    font-size: 1rem;
+                }
+
+                .personalizacion-item strong {
+                    color: #2d3748;
+                    font-size: 0.9rem;
+                }
+
+                .personalizacion-item p {
+                    color: #4a5568;
+                    font-size: 0.85rem;
+                    margin-left: 24px;
+                    line-height: 1.5;
+                }
+
+                @@media (max-width: 768px) {
+                    .btn-ver-personalizacion {
+                        font-size: 0.8rem;
+                        padding: 5px 12px;
+                    }
+
+                    .personalizacion-detalle {
+                        padding: 10px 12px;
+                    }
+
+                    .personalizacion-item strong {
+                        font-size: 0.85rem;
+                    }
+
+                    .personalizacion-item p {
+                        font-size: 0.8rem;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+}

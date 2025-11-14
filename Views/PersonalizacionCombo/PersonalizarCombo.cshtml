@@ -1,0 +1,824 @@
+﻿<!-- Views/PersonalizacionCombo/PersonalizarCombo.cshtml -->
+@model Restaurante.Models.ViewModels.PersonalizarComboViewModel
+@{
+    ViewData["Title"] = "Personalizar Combo";
+}
+
+<link rel="stylesheet" href="~/css/PersonalizarCombo.css" />
+
+<div class="personalizar-container fade-in-up">
+    <div class="row">
+        <div class="col-12">
+            <div class="main-card">
+                <div class="combo-header">
+                    <h4><i class="fas fa-gift"></i> Personalizar Combo: @Model.Combo.Nombre</h4>
+                    <small style="opacity: 0.9;">Personaliza cada producto de tu combo a tu gusto</small>
+                </div>
+                <div class="main-card-body">
+                    <form method="post" asp-action="ProcesarPersonalizacionCombo" id="formPersonalizarCombo">
+                        <input type="hidden" asp-for="ComboId" />
+                        <!-- ✅ Campo para bebida seleccionada -->
+                        <input type="hidden" asp-for="BebidaSeleccionadaId" id="bebidaSeleccionadaId" />
+
+                        <!-- INFORMACIÓN DEL COMBO -->
+                        <div class="row mb-4">
+                            <div class="col-lg-8">
+                                <div class="combo-info-section">
+                                    <h5>@Model.Combo.Nombre</h5>
+                                    <p class="text-muted mb-3" style="color: #4a5568 !important;">@Model.Combo.Descripcion</p>
+                                    <p class="h6 mb-2" style="color: #2d3748; font-weight: 700;">🎁 Incluye:</p>
+                                    <ul class="combo-items-list">
+                                        @foreach (var item in Model.Items)
+                                        {
+                                            <li>@item.ProductoNombre</li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="precio-flotante">
+                                    <h5>Precio del Combo</h5>
+                                    <div class="precio-display">
+                                        S/. <span id="precioComboTotal">@Model.Combo.Precio.ToString("0.00")</span>
+                                    </div>
+                                    <div class="precio-detalle mt-2">
+                                        Precio base: S/. <span id="precioBaseTotal">@Model.Combo.Precio.ToString("0.00")</span>
+                                    </div>
+                                    @if (Model.Items.Sum(i => i.PrecioBase) > Model.Combo.Precio)
+                                    {
+                                        <small style="opacity: 0.7; display: block; margin-top: 5px; color: #10b981;">
+                                            <i class="fas fa-tag"></i> ¡Ahorras S/. @((Model.Items.Sum(i => i.PrecioBase) - Model.Combo.Precio).ToString("0.00"))!
+                                        </small>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ SELECTOR DE BEBIDAS CON RECARGOS REALES -->
+                        @{
+                            var itemBebida = Model.Items.FirstOrDefault(i => i.Categoria == CategoriaProducto.Bebida);
+                            if (itemBebida != null && Model.BebidasDisponibles.Any())
+                            {
+                                <div class="producto-combo-card mb-4">
+                                    <div class="producto-header bebida">
+                                        <h6>
+                                            <i class="fas fa-glass-whiskey"></i>
+                                            Elegir Bebida para el Combo
+                                        </h6>
+                                    </div>
+                                    <div class="producto-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">Selecciona tu bebida:</label>
+                                                <div class="bebidas-disponibles">
+                                                    @foreach (var bebida in Model.BebidasDisponibles)
+                                                    {
+                                                        <div class="opcion-bebida @(bebida.Id == itemBebida.ProductoId ? "bebida-actual" : "")"
+                                                             data-bebida-id="@bebida.Id">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input"
+                                                                       type="radio"
+                                                                       name="bebidaSeleccionada"
+                                                                       value="@bebida.Id"
+                                                                       id="bebida_@bebida.Id"
+                                                                       @(bebida.Id == itemBebida.ProductoId ? "checked" : "")>
+                                                                <label class="form-check-label" for="bebida_@bebida.Id">
+                                                                    <div class="bebida-info">
+                                                                        <div class="bebida-nombre">@bebida.Nombre</div>
+                                                                        <div class="bebida-descripcion">@bebida.Descripcion</div>
+                                                                        @if (bebida.EsAlcoholica)
+                                                                        {
+                                                                            <small class="text-warning"><i class="fas fa-exclamation-triangle"></i> Bebida alcohólica</small>
+                                                                        }
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <small class="text-muted mt-2 d-block">
+                                                    <i class="fas fa-info-circle"></i> Cambiar la bebida no afecta el precio del combo
+                                                </small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="tamanio-bebida-section">
+                                                    <label class="form-label fw-bold">Tamaño de la bebida:</label>
+                                                    <div class="opciones-tamanio">
+                                                        @{
+                                                            // ✅ USAR RECARGOS REALES DEL COMBO
+                                                            var recargos = new Dictionary<Tamanio, decimal>
+                                                                                                {
+                                                                                                { Tamanio.Pequeno, itemBebida.RecargoPequeno },
+                                                                                                { Tamanio.Mediano, itemBebida.RecargoMediano },
+                                                                                                { Tamanio.Grande, itemBebida.RecargoGrande }
+                                                                                                };
+
+                                                            var mililitrosPorTamanio = new Dictionary<Tamanio, int>
+                                                                                                {
+                                                                                                { Tamanio.Pequeno, 350 },
+                                                                                                { Tamanio.Mediano, 500 },
+                                                                                                { Tamanio.Grande, 650 }
+                                                                                                };
+                                                        }
+
+                                                        @foreach (Tamanio tamanio in Enum.GetValues(typeof(Tamanio)))
+                                                        {
+                                                            var recargo = recargos[tamanio];
+                                                            var mililitros = mililitrosPorTamanio[tamanio];
+
+                                                            <div class="opcion-tamanio">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input tamanio-bebida-combo"
+                                                                           type="radio"
+                                                                           name="Items[@Model.Items.IndexOf(itemBebida)].TamanioSeleccionado"
+                                                                           value="@tamanio"
+                                                                           id="tamanio_combo_@tamanio"
+                                                                           data-tamanio="@tamanio"
+                                                                           data-recargo="@recargo.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                                                           @(itemBebida.TamanioSeleccionado == tamanio ? "checked" : "")>
+                                                                    <label class="form-check-label" for="tamanio_combo_@tamanio">
+                                                                        <span class="tamanio-nombre">@tamanio</span>
+                                                                        <span class="tamanio-info">
+                                                                            <small>@mililitros ml</small>
+                                                                        </span>
+                                                                        @if (recargo > 0)
+                                                                        {
+                                                                            <span class="badge-recargo">+S/. @recargo.ToString("0.00")</span>
+                                                                        }
+                                                                        else if (recargo < 0)
+                                                                        {
+                                                                            <span class="badge-ahorro">-S/. @Math.Abs(recargo).ToString("0.00")</span>
+                                                                        }
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <small class="text-muted mt-2 d-block">
+                                                        <i class="fas fa-info-circle"></i> El tamaño afecta el precio final
+                                                    </small>
+                                                    <div id="info-recargo-bebida" class="mt-2 p-2 bg-light rounded d-none">
+                                                        <small><strong>Recargo por tamaño:</strong> <span id="texto-recargo-actual">S/. 0.00</span></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        <!-- PERSONALIZACIÓN DE CADA PRODUCTO -->
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            var item = Model.Items[i];
+
+                            // Saltar la bebida si ya la mostramos en el selector especial
+                            if (item.Categoria == CategoriaProducto.Bebida) { continue; }
+
+                            var categoriaClass = item.Categoria.ToString().ToLower();
+
+                            <input type="hidden" asp-for="Items[i].ItemComboId" />
+                            <input type="hidden" asp-for="Items[i].ProductoId" />
+                            <input type="hidden" asp-for="Items[i].Categoria" />
+                            <input type="hidden" asp-for="Items[i].PrecioBase" id="precioBase_@(i)" data-precio-base="@item.PrecioBase.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" />
+                            <input type="hidden" asp-for="Items[i].PrecioPersonalizado" id="precioPersonalizado_@(i)" />
+
+                            <div class="producto-combo-card">
+                                <div class="producto-header @categoriaClass">
+                                    <h6>
+                                        <i class="fas @GetProductIcon(item.Categoria)"></i>
+                                        Personalizar: @item.ProductoNombre
+                                    </h6>
+                                </div>
+                                <div class="producto-body">
+                                    <div class="row">
+                                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                                            <img src="@(item.ProductoImagen ?? "/images/placeholder.jpg")"
+                                                 class="producto-imagen"
+                                                 alt="@item.ProductoNombre">
+                                            <div class="precio-producto">
+                                                S/. <span class="precio-item" id="precioItem_@(i)">@item.PrecioBase.ToString("0.00")</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <p class="text-muted mb-3">@item.ProductoDescripcion</p>
+
+                                            @switch (item.Categoria)
+                                            {
+                                                case CategoriaProducto.Hamburguesa:
+                                                    <!-- PERSONALIZACIÓN DE HAMBURGUESA -->
+                                                    <!-- 1. INGREDIENTES OBLIGATORIOS -->
+                                                    @if (item.IngredientesObligatorios.Any())
+                                                    {
+                                                        <div class="personalizacion-section obligatorios mb-4">
+                                                            <h6>
+                                                                <i class="fas fa-check-circle"></i> Ingredientes Base (Obligatorios)
+                                                            </h6>
+                                                            <small class="text-muted d-block mb-3">
+                                                                Estos ingredientes siempre están incluidos en tu hamburguesa
+                                                            </small>
+                                                            <div class="row">
+                                                                @foreach (var ingrediente in item.IngredientesObligatorios)
+                                                                {
+                                                                    <div class="col-md-6">
+                                                                        <div class="ingrediente-obligatorio">
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input"
+                                                                                       type="checkbox"
+                                                                                       checked
+                                                                                       disabled
+                                                                                       id="obligatorio_@(i)_@(ingrediente.Id)">
+                                                                                <label class="form-check-label" for="obligatorio_@(i)_@(ingrediente.Id)">
+                                                                                    <span>@ingrediente.Nombre</span>
+                                                                                    <span class="badge bg-danger ms-2">Obligatorio</span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- 2. INGREDIENTES OPCIONALES BASE (Se pueden sacar) -->
+                                                    @if (item.IngredientesOpcionalesBase.Any())
+                                                    {
+                                                        <div class="personalizacion-section opcionales-base mb-4">
+                                                            <h6>
+                                                                <i class="fas fa-list-check"></i> Ingredientes Opcionales
+                                                            </h6>
+                                                            <small class="text-muted d-block mb-3">
+                                                                Desmarca los ingredientes que no deseas en tu hamburguesa
+                                                            </small>
+                                                            <div class="row">
+                                                                @for (int j = 0; j < item.IngredientesOpcionalesBase.Count; j++)
+                                                                {
+                                                                    var ingrediente = item.IngredientesOpcionalesBase[j];
+                                                                    <div class="col-md-6">
+                                                                        <div class="ingrediente-opcional">
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input ingrediente-opcional-check"
+                                                                                       type="checkbox"
+                                                                                       name="Items[@i].IngredientesOpcionalesSeleccionados"
+                                                                                       value="@ingrediente.Id"
+                                                                                       checked
+                                                                                       id="opcional_@(i)_@(j)"
+                                                                                       data-item-index="@i">
+                                                                                <label class="form-check-label" for="opcional_@(i)_@(j)">
+                                                                                    <span>@ingrediente.Nombre</span>
+                                                                                    <span class="badge bg-info ms-2">Incluido</span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- 3. INGREDIENTES EXTRA -->
+                                                    <div class="personalizacion-section extras">
+                                                        <h6>
+                                                            <i class="fas fa-plus-circle"></i> Ingredientes Extra
+                                                        </h6>
+                                                        <small class="text-muted d-block mb-3">
+                                                            Agrega ingredientes adicionales a tu hamburguesa
+                                                        </small>
+                                                        <div class="row">
+                                                            @if (item.IngredientesDisponibles.Any())
+                                                            {
+                                                                @for (int j = 0; j < item.IngredientesDisponibles.Count; j++)
+                                                                {
+                                                                    var ingrediente = item.IngredientesDisponibles[j];
+                                                                    <div class="col-md-6">
+                                                                        <div class="opcion-personalizada">
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input ingrediente-extra"
+                                                                                       type="checkbox"
+                                                                                       name="Items[@i].IngredientesExtraSeleccionados"
+                                                                                       value="@ingrediente.Id"
+                                                                                       id="ingrediente_@(i)_@(j)"
+                                                                                       data-precio="@ingrediente.PrecioAdicional.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                                                                       data-item-index="@i">
+                                                                                <label class="form-check-label" for="ingrediente_@(i)_@(j)">
+                                                                                    <span>@ingrediente.Nombre</span>
+                                                                                    @if (ingrediente.PrecioAdicional > 0)
+                                                                                    {
+                                                                                        <span class="badge-precio-extra">
+                                                                                            +S/. @ingrediente.PrecioAdicional.ToString("0.00")
+                                                                                        </span>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <span class="badge bg-success ms-2">Gratis</span>
+                                                                                    }
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="col-12">
+                                                                    <p class="text-muted">No hay ingredientes extra disponibles</p>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    break;
+
+                                                case CategoriaProducto.Papas:
+                                                    <!-- PERSONALIZACIÓN DE PAPAS -->
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="personalizacion-section opciones">
+                                                                <h6><i class="fas fa-arrows-alt-v"></i> Tamaño</h6>
+                                                                @foreach (Tamanio tamanio in Enum.GetValues(typeof(Tamanio)))
+                                                                {
+                                                                    var precioAdicional = GetPrecioAdicionalTamanio(tamanio);
+                                                                    <div class="opcion-personalizada mb-2">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input tamanio-papas"
+                                                                                   type="radio"
+                                                                                   name="Items[@i].TamanioSeleccionado"
+                                                                                   value="@tamanio"
+                                                                                   id="tamanio_papas_@(i)_@(tamanio)"
+                                                                                   data-item-index="@i"
+                                                                                   data-precio-adicional="@precioAdicional.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)"
+                                                                                   @(item.TamanioSeleccionado == tamanio ? "checked" : "")>
+                                                                            <label class="form-check-label" for="tamanio_papas_@(i)_@(tamanio)">
+                                                                                @tamanio
+                                                                                @if (precioAdicional > 0)
+                                                                                {
+                                                                                    <span class="badge-precio-extra">+S/. @precioAdicional.ToString("0.00")</span>
+                                                                                }
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="personalizacion-section opciones">
+                                                                <h6><i class="fas fa-pepper-hot"></i> Sal</h6>
+                                                                <div class="opcion-personalizada mb-2">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                               name="Items[@i].ConSal" value="true"
+                                                                               id="conSal_@(i)" @(item.ConSal ? "checked" : "")>
+                                                                        <label class="form-check-label" for="conSal_@(i)">Con Sal</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="opcion-personalizada">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                               name="Items[@i].ConSal" value="false"
+                                                                               id="sinSal_@(i)" @(!item.ConSal ? "checked" : "")>
+                                                                        <label class="form-check-label" for="sinSal_@(i)">Sin Sal</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="personalizacion-section opciones">
+                                                                <h6><i class="fas fa-bottle-droplet"></i> Salsa</h6>
+                                                                <select class="form-select" name="Items[@i].SalsaSeleccionada">
+                                                                    <option value="Kétchup">Kétchup</option>
+                                                                    <option value="Mayonesa">Mayonesa</option>
+                                                                    <option value="Mostaza">Mostaza</option>
+                                                                    <option value="Salsa BBQ">Salsa BBQ</option>
+                                                                    <option value="Salsa de la casa">Salsa de la casa</option>
+                                                                    <option value="Sin salsa">Sin salsa</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    break;
+                                            }
+
+                                            <!-- NOTAS ADICIONALES -->
+                                            <div class="mt-3">
+                                                <label class="form-label fw-bold">
+                                                    <i class="fas fa-edit"></i> Notas especiales para este producto
+                                                </label>
+                                                <textarea asp-for="Items[i].NotasPersonalizacion" class="form-control notas-producto" rows="2"
+                                                          placeholder="Ej: Sin cebolla, sin hielo, extra salsa..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- RESUMEN FINAL -->
+                        <div class="resumen-final-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5><i class="fas fa-receipt"></i> Resumen del Combo Personalizado</h5>
+                                    <p class="mb-0" style="opacity: 0.8;">Precio actualizado según tus personalizaciones</p>
+                                    <div id="resumen-bebida" class="mt-2">
+                                        <small><strong>Bebida seleccionada:</strong> <span id="nombre-bebida-seleccionada">@Model.BebidasDisponibles.FirstOrDefault()?.Nombre</span></small>
+                                        <br>
+                                        <small><strong>Tamaño:</strong> <span id="tamanio-bebida-seleccionada">Mediano</span></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div style="font-size: 1.2rem; margin-bottom: 5px;">Total a Pagar:</div>
+                                    <div class="precio-final">
+                                        S/. <span id="precioFinalCombo">@Model.Combo.Precio.ToString("0.00")</span>
+                                    </div>
+                                    <small style="opacity: 0.7;">
+                                        <span id="mensajeExtras">Precio base del combo</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="mt-4 text-center">
+                            <button type="submit" class="btn btn-agregar-combo">
+                                <i class="fas fa-shopping-cart"></i> Agregar Combo Personalizado al Carrito
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-volver ms-2 mt-2 mt-md-0">
+                                <i class="fas fa-arrow-left"></i> Volver al Menú
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ✅ Datos de bebidas disponibles con sus recargos del combo
+        const bebidasData = {
+            @foreach (var bebida in Model.BebidasDisponibles)
+            {
+                    // Buscar los recargos configurados para esta bebida en el combo
+                    var comboBebida = Model.Combo.BebidasDisponibles.FirstOrDefault(cb => cb.BebidaId == bebida.Id);
+                    var recargoPequeno = comboBebida?.RecargoPequeno ?? -1.00m;
+                    var recargoMediano = comboBebida?.RecargoMediano ?? 0.00m;
+                    var recargoGrande = comboBebida?.RecargoGrande ?? 2.00m;
+
+                        <text>
+                        "@bebida.Id": {
+                            nombre: "@bebida.Nombre",
+                            recargos: {
+                                "Pequeno": @recargoPequeno.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+                                "Mediano": @recargoMediano.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+                                "Grande": @recargoGrande.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                            }
+                        },
+                        </text>
+            }
+        };
+
+        // Calcular precios cuando cambien las personalizaciones
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Script de personalización de combo cargado');
+            console.log('🍹 Bebidas disponibles:', Object.keys(bebidasData).length);
+
+            // ✅ Manejar cambio de bebida seleccionada
+            document.querySelectorAll('input[name="bebidaSeleccionada"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const bebidaId = this.value;
+                    console.log('🍹 Bebida cambiada a ID:', bebidaId);
+
+                    // Actualizar campo hidden
+                    document.getElementById('bebidaSeleccionadaId').value = bebidaId;
+
+                    // Actualizar interfaz de bebida seleccionada
+                    document.querySelectorAll('.opcion-bebida').forEach(opcion => {
+                        opcion.classList.remove('bebida-actual');
+                        if (opcion.getAttribute('data-bebida-id') === bebidaId) {
+                            opcion.classList.add('bebida-actual');
+                        }
+                    });
+
+                    // Actualizar información de la bebida en el resumen
+                    const bebida = bebidasData[bebidaId];
+                    if (bebida) {
+                        document.getElementById('nombre-bebida-seleccionada').textContent = bebida.nombre;
+                        console.log('📋 Recargos de la bebida:', bebida.recargos);
+
+                        // ✅ NUEVO: Actualizar los recargos en los radio buttons
+                        actualizarRecargosBebida(bebida.recargos);
+                    }
+
+                    // Recalcular precios con los nuevos recargos
+                    actualizarPreciosCombo();
+                    actualizarInfoRecargoBebida();
+                });
+            });
+
+            // ✅ NUEVA FUNCIÓN: Actualizar recargos cuando cambia la bebida
+            function actualizarRecargosBebida(recargos) {
+                console.log('🔄 Actualizando recargos de bebida:', recargos);
+
+                // Actualizar el atributo data-recargo de cada radio button
+                document.querySelectorAll('.tamanio-bebida-combo').forEach(radio => {
+                    const tamanio = radio.getAttribute('data-tamanio');
+                    const nuevoRecargo = recargos[tamanio] || 0;
+
+                    radio.setAttribute('data-recargo', nuevoRecargo.toFixed(2));
+                    console.log(`  📏 ${tamanio}: S/. ${nuevoRecargo.toFixed(2)}`);
+
+                    // Actualizar el badge visual en el label
+                    const label = radio.nextElementSibling;
+                    if (label) {
+                        // Remover badge anterior
+                        const badgeExistente = label.querySelector('.badge-recargo, .badge-ahorro');
+                        if (badgeExistente) {
+                            badgeExistente.remove();
+                        }
+
+                        // Agregar nuevo badge si hay recargo
+                        if (nuevoRecargo > 0) {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge-recargo';
+                            badge.textContent = `+S/. ${nuevoRecargo.toFixed(2)}`;
+                            label.appendChild(badge);
+                        } else if (nuevoRecargo < 0) {
+                            const badge = document.createElement('span');
+                            badge.className = 'badge-ahorro';
+                            badge.textContent = `-S/. ${Math.abs(nuevoRecargo).toFixed(2)}`;
+                            label.appendChild(badge);
+                        }
+                    }
+                });
+            }
+
+            // ✅ Manejar cambio de tamaño de bebida
+            document.querySelectorAll('.tamanio-bebida-combo').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    console.log('📏 Tamaño de bebida cambiado');
+                    actualizarPreciosCombo();
+                    actualizarInfoRecargoBebida();
+                });
+            });
+
+            // Actualizar precios cuando cambien los ingredientes extra
+            document.querySelectorAll('.ingrediente-extra').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    console.log('🔔 Ingrediente extra cambiado');
+                    const parent = this.closest('.opcion-personalizada');
+                    if (this.checked) {
+                        parent.classList.add('selected');
+                    } else {
+                        parent.classList.remove('selected');
+                    }
+                    actualizarPreciosCombo();
+                });
+
+                if (checkbox.checked) {
+                    checkbox.closest('.opcion-personalizada').classList.add('selected');
+                }
+            });
+
+            // Manejo visual de ingredientes opcionales
+            document.querySelectorAll('.ingrediente-opcional-check').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    console.log('🔔 Ingrediente opcional cambiado');
+                    const parent = this.closest('.ingrediente-opcional');
+                    const badge = parent.querySelector('.badge');
+
+                    if (this.checked) {
+                        parent.style.opacity = '1';
+                        if (badge) {
+                            badge.textContent = 'Incluido';
+                            badge.className = 'badge bg-info ms-2';
+                        }
+                    } else {
+                        parent.style.opacity = '0.6';
+                        if (badge) {
+                            badge.textContent = 'Removido';
+                            badge.className = 'badge bg-secondary ms-2';
+                        }
+                    }
+                });
+            });
+
+            // Actualizar precios cuando cambien los tamaños de papas
+            document.querySelectorAll('.tamanio-papas').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    console.log('🔔 Tamaño de papas cambiado');
+                    actualizarPreciosCombo();
+                });
+            });
+
+            // ✅ Función para actualizar información de recargo de bebida
+            function actualizarInfoRecargoBebida() {
+                const radioTamanioBebida = document.querySelector('.tamanio-bebida-combo:checked');
+                const infoRecargo = document.getElementById('info-recargo-bebida');
+                const textoRecargo = document.getElementById('texto-recargo-actual');
+
+                if (radioTamanioBebida) {
+                    const recargo = parseFloat(radioTamanioBebida.getAttribute('data-recargo')) || 0;
+                    const tamanio = radioTamanioBebida.getAttribute('data-tamanio');
+
+                    document.getElementById('tamanio-bebida-seleccionada').textContent = tamanio;
+
+                    if (recargo > 0) {
+                        infoRecargo.classList.remove('d-none');
+                        textoRecargo.textContent = `+S/. ${recargo.toFixed(2)}`;
+                        textoRecargo.className = 'text-warning fw-bold';
+                    } else if (recargo < 0) {
+                        infoRecargo.classList.remove('d-none');
+                        textoRecargo.textContent = `-S/. ${Math.abs(recargo).toFixed(2)} (ahorro)`;
+                        textoRecargo.className = 'text-success fw-bold';
+                    } else {
+                        infoRecargo.classList.add('d-none');
+                    }
+                }
+            }
+
+            function actualizarPreciosCombo() {
+                console.log('🔄 Actualizando precios del combo...');
+
+                // PRECIO BASE DEL COMBO (fijo)
+                const precioComboBase = parseFloat('@Model.Combo.Precio.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)');
+                let totalExtras = 0;
+
+                const totalItems = @Model.Items.Count;
+
+                console.log(`💰 Precio base combo: S/. ${precioComboBase.toFixed(2)}`);
+                console.log(`📦 Total items: ${totalItems}`);
+
+                // Para cada item del combo (excluyendo la bebida que ya la manejamos por separado)
+                for (let i = 0; i < totalItems; i++) {
+                    // Obtener el precio base del atributo data
+                    const precioBaseElement = document.getElementById(`precioBase_${i}`);
+                    if (!precioBaseElement) continue; // Saltar si no existe (puede ser la bebida)
+
+                    const precioBaseItem = parseFloat(precioBaseElement.getAttribute('data-precio-base'));
+
+                    let precioItemActual = precioBaseItem;
+                    let extrasItem = 0;
+
+                    console.log(`\n--- Item ${i} ---`);
+                    console.log(`Precio base: S/. ${precioBaseItem.toFixed(2)}`);
+
+                    try {
+                        // 1. INGREDIENTES EXTRA
+                        const checkboxes = document.querySelectorAll(`input[name="Items[${i}].IngredientesExtraSeleccionados"]:checked`);
+                        console.log(`${checkboxes.length} ingredientes extra seleccionados`);
+
+                        checkboxes.forEach(checkbox => {
+                            const precioExtra = parseFloat(checkbox.getAttribute('data-precio')) || 0;
+                            extrasItem += precioExtra;
+                            console.log(`  ✓ Extra: +S/. ${precioExtra.toFixed(2)}`);
+                        });
+
+                        // 2. TAMAÑOS (Papas solamente - la bebida se maneja aparte)
+                        const radioTamanio = document.querySelector(`input[name="Items[${i}].TamanioSeleccionado"]:checked`);
+                        if (radioTamanio && radioTamanio.classList.contains('tamanio-papas')) {
+                            const precioAdicionalTamanio = parseFloat(radioTamanio.getAttribute('data-precio-adicional')) || 0;
+                            console.log(`Tamaño papas seleccionado: ${radioTamanio.value}`);
+                            console.log(`Precio adicional tamaño: S/. ${precioAdicionalTamanio.toFixed(2)}`);
+
+                            if (precioAdicionalTamanio > 0) {
+                                extrasItem += precioAdicionalTamanio;
+                                console.log(`  ✓ Tamaño extra aplicado: +S/. ${precioAdicionalTamanio.toFixed(2)}`);
+                            }
+                        }
+
+                        precioItemActual = precioBaseItem + extrasItem;
+                        totalExtras += extrasItem;
+
+                        console.log(`Extras totales item: S/. ${extrasItem.toFixed(2)}`);
+                        console.log(`Precio final item: S/. ${precioItemActual.toFixed(2)}`);
+
+                        // Actualizar precio del item en la interfaz
+                        const precioItemElement = document.getElementById(`precioItem_${i}`);
+                        const precioPersonalizadoElement = document.getElementById(`precioPersonalizado_${i}`);
+
+                        if (precioItemElement) {
+                            precioItemElement.textContent = precioItemActual.toFixed(2);
+                            precioItemElement.classList.add('precio-actualizado');
+                            setTimeout(() => {
+                                precioItemElement.classList.remove('precio-actualizado');
+                            }, 400);
+                        }
+                        if (precioPersonalizadoElement) {
+                            precioPersonalizadoElement.value = precioItemActual.toFixed(2);
+                        }
+
+                    } catch (error) {
+                        console.error(`❌ Error procesando item ${i}:`, error);
+                    }
+                }
+
+                // ✅ NUEVO: Manejar recargo de tamaño de bebida
+                const radioTamanioBebida = document.querySelector('.tamanio-bebida-combo:checked');
+                if (radioTamanioBebida) {
+                    const recargoBebida = parseFloat(radioTamanioBebida.getAttribute('data-recargo')) || 0;
+                    const tamanioBebida = radioTamanioBebida.getAttribute('data-tamanio');
+
+                    console.log(`\n--- Bebida del Combo ---`);
+                    console.log(`Tamaño seleccionado: ${tamanioBebida}`);
+                    console.log(`Recargo: S/. ${recargoBebida.toFixed(2)}`);
+
+                    totalExtras += recargoBebida;
+                }
+
+                // PRECIO FINAL = Precio base del combo + todos los extras
+                const precioFinal = precioComboBase + totalExtras;
+
+                console.log('\n📊 ========== RESUMEN ==========');
+                console.log(`Precio base combo: S/. ${precioComboBase.toFixed(2)}`);
+                console.log(`Total extras: S/. ${totalExtras.toFixed(2)}`);
+                console.log(`PRECIO FINAL: S/. ${precioFinal.toFixed(2)}`);
+                console.log('================================\n');
+
+                // Actualizar precios en la interfaz
+                const precioBaseTotalElement = document.getElementById('precioBaseTotal');
+                const precioFinalComboElement = document.getElementById('precioFinalCombo');
+                const precioComboTotalElement = document.getElementById('precioComboTotal');
+                const mensajeExtrasElement = document.getElementById('mensajeExtras');
+
+                if (precioBaseTotalElement) {
+                    precioBaseTotalElement.textContent = precioComboBase.toFixed(2);
+                }
+                if (precioFinalComboElement) {
+                    precioFinalComboElement.textContent = precioFinal.toFixed(2);
+                    precioFinalComboElement.classList.add('precio-actualizado');
+                    setTimeout(() => {
+                        precioFinalComboElement.classList.remove('precio-actualizado');
+                    }, 400);
+                }
+                if (precioComboTotalElement) {
+                    precioComboTotalElement.textContent = precioFinal.toFixed(2);
+                    precioComboTotalElement.classList.add('precio-actualizado');
+                    setTimeout(() => {
+                        precioComboTotalElement.classList.remove('precio-actualizado');
+                    }, 400);
+                }
+
+                // Actualizar mensaje de extras
+                if (mensajeExtrasElement) {
+                    if (totalExtras > 0) {
+                        mensajeExtrasElement.textContent = `Incluye S/. ${totalExtras.toFixed(2)} en extras`;
+                        mensajeExtrasElement.style.color = '#f59e0b';
+                    } else if (totalExtras < 0) {
+                        mensajeExtrasElement.textContent = `Ahorro: S/. ${Math.abs(totalExtras).toFixed(2)}`;
+                        mensajeExtrasElement.style.color = '#10b981';
+                    } else {
+                        mensajeExtrasElement.textContent = 'Precio base del combo';
+                        mensajeExtrasElement.style.color = '';
+                    }
+                }
+            }
+
+            // DEBUG: Mostrar información de los elementos
+            console.log('🔍 Elementos encontrados:');
+            console.log(`- Bebidas disponibles: ${document.querySelectorAll('.opcion-bebida').length}`);
+            console.log(`- Ingredientes extra: ${document.querySelectorAll('.ingrediente-extra').length}`);
+            console.log(`- Ingredientes opcionales: ${document.querySelectorAll('.ingrediente-opcional-check').length}`);
+            console.log(`- Radios tamaño bebida: ${document.querySelectorAll('.tamanio-bebida-combo').length}`);
+            console.log(`- Radios tamaño papas: ${document.querySelectorAll('.tamanio-papas').length}`);
+            console.log(`- Items del combo: ${@Model.Items.Count}`);
+
+            // ✅ Inicializar bebida seleccionada
+            const bebidaInicial = document.querySelector('input[name="bebidaSeleccionada"]:checked');
+            if (bebidaInicial) {
+                document.getElementById('bebidaSeleccionadaId').value = bebidaInicial.value;
+                const opcionInicial = document.querySelector(`.opcion-bebida[data-bebida-id="${bebidaInicial.value}"]`);
+                if (opcionInicial) {
+                    opcionInicial.classList.add('bebida-actual');
+                }
+            }
+
+            // Ejecutar una vez al cargar
+            actualizarPreciosCombo();
+            actualizarInfoRecargoBebida();
+        });
+    </script>
+}
+
+@functions {
+    public string GetProductIcon(CategoriaProducto categoria)
+    {
+        return categoria switch
+        {
+            CategoriaProducto.Hamburguesa => "fa-hamburger",
+            CategoriaProducto.Bebida => "fa-glass-whiskey",
+            CategoriaProducto.Papas => "fa-french-fries",
+            _ => "fa-utensils"
+        };
+    }
+
+    public decimal GetPrecioAdicionalTamanio(Tamanio tamanio)
+    {
+        return tamanio switch
+        {
+            Tamanio.Pequeno => 0m,
+            Tamanio.Mediano => 0m,    // Sin cargo adicional para mediano (es el tamaño base)
+            Tamanio.Grande => 2m,     // +S/. 2.00 para grande
+            _ => 0m
+        };
+    }
+}

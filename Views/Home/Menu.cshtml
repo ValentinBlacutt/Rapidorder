@@ -1,0 +1,198 @@
+﻿<!-- Views/Home/Menu.cshtml -->
+@model Restaurante.Models.ViewModels.MenuViewModel
+@{
+    ViewData["Title"] = "Menú Completo";
+}
+
+<link rel="stylesheet" href="~/css/home.css" />
+
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-3">🍽️ Nuestro Menú</h1>
+        <p class="lead">Explora todas nuestras deliciosas opciones preparadas con ingredientes frescos</p>
+    </div>
+</div>
+
+<div class="main-container">
+    <!-- Hamburguesas -->
+    <section class="mb-5 fade-in">
+        <h2 class="section-header">
+            <i class="fas fa-hamburger text-warning"></i>
+            Hamburguesas
+        </h2>
+        <div class="row g-4">
+            @foreach (var hamburguesa in Model.Hamburguesas)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="@(hamburguesa.ImagenUrl ?? "/images/hamburguesa-placeholder.jpg")"
+                                 class="product-image"
+                                 alt="@hamburguesa.Nombre"
+                                 loading="lazy">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@hamburguesa.Nombre</h5>
+                            <p class="card-text">@hamburguesa.Descripcion</p>
+
+                            <div class="mb-3">
+                                @if (hamburguesa.Ingredientes.Any())
+                                {
+                                    <small class="text-muted fw-bold d-block mb-2">🥬 Ingredientes:</small>
+                                    <div>
+                                        @foreach (var ingrediente in hamburguesa.Ingredientes.Take(3))
+                                        {
+                                            <span class="badge bg-secondary me-1 mb-1">@ingrediente.Ingrediente.Nombre</span>
+                                        }
+                                        @if (hamburguesa.Ingredientes.Count > 3)
+                                        {
+                                            <span class="badge bg-light text-dark">+@(hamburguesa.Ingredientes.Count - 3) más</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="mb-3">
+                                    <p class="price-tag">S/. @hamburguesa.Precio.ToString("0.00")</p>
+                                </div>
+                                <a href="@Url.Action("PersonalizarHamburguesa", "Personalizacion", new { id = hamburguesa.Id })"
+                                   class="btn btn-custom-primary w-100">
+                                    <i class="fas fa-utensils me-2"></i>Personalizar y Agregar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Papas -->
+    <section class="mb-5 fade-in">
+        <h2 class="section-header">
+            <i class="fas fa-french-fries text-success"></i>
+            Papas Fritas
+        </h2>
+        <div class="row g-4">
+            @foreach (var papa in Model.Papas)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="@(papa.ImagenUrl ?? "/images/papas-placeholder.jpg")"
+                                 class="product-image"
+                                 alt="@papa.Nombre"
+                                 loading="lazy">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@papa.Nombre</h5>
+                            <p class="card-text flex-grow-1">@papa.Descripcion</p>
+                            <div class="mb-3">
+                                <span class="badge bg-info me-1">📏 Tamaño: @papa.Tamanio</span>
+                                @if (!string.IsNullOrEmpty(papa.TipoSalsa))
+                                {
+                                    <span class="badge bg-warning text-dark">🥫 Salsa: @papa.TipoSalsa</span>
+                                }
+                            </div>
+                            <div class="mt-auto">
+                                <p class="price-tag mb-3" style="background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                    S/. @papa.Precio.ToString("0.00")
+                                </p>
+                                <a href="@Url.Action("PersonalizarPapas", "PersonalizacionPapas", new { id = papa.Id })"
+                                   class="btn btn-custom-primary w-100"
+                                   style="background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);">
+                                    <i class="fas fa-french-fries"></i> Personalizar y Agregar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Bebidas -->
+    <section class="mb-5 fade-in">
+        <h2 class="section-header">
+            <i class="fas fa-glass-whiskey text-info"></i>
+            Bebidas
+        </h2>
+        <div class="row g-4">
+            @foreach (var bebida in Model.Bebidas)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <img src="@(bebida.ImagenUrl ?? "/images/bebida-placeholder.jpg")"
+                                 class="product-image"
+                                 alt="@bebida.Nombre"
+                                 loading="lazy">
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@bebida.Nombre</h5>
+                            <p class="card-text flex-grow-1">@bebida.Descripcion</p>
+                            <div class="mb-3">
+                                <span class="badge bg-info me-1 mb-1">📏 @bebida.Tamanio</span>
+                                <span class="badge bg-secondary me-1 mb-1">💧 @bebida.Mililitros ml</span>
+                                @if (bebida.EsAlcoholica)
+                                {
+                                    <span class="badge bg-warning text-dark mb-1">🍺 Alcohólica</span>
+                                }
+                            </div>
+                            <div class="mt-auto">
+                                <p class="price-tag mb-3">S/. @bebida.Precio.ToString("0.00")</p>
+                                <a href="@Url.Action("PersonalizarBebida", "PersonalizacionBebida", new { id = bebida.Id })"
+                                   class="btn btn-custom-info w-100">
+                                    <i class="fas fa-glass-whiskey"></i> Elegir Tamaño
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.agregar-carrito').click(function() {
+                var productoId = $(this).data('producto-id');
+
+                $.post('/Carrito/AgregarProducto', { productoId: productoId }, function(response) {
+                    if (response.success) {
+                        mostrarNotificacion('¡Agregado al carrito!', 'success');
+                        actualizarContadorCarrito();
+                    } else {
+                        mostrarNotificacion('Error: ' + response.message, 'error');
+                    }
+                });
+            });
+
+            function mostrarNotificacion(mensaje, tipo) {
+                alert(mensaje);
+            }
+
+            // Agregar animación de entrada a las secciones
+            const sections = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'all 0.6s ease-out';
+                observer.observe(section);
+            });
+        });
+    </script>
+}

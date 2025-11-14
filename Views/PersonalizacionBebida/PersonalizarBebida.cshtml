@@ -1,0 +1,281 @@
+﻿<!-- Views/PersonalizacionBebida/PersonalizarBebida.cshtml -->
+@model Restaurante.Models.ViewModels.PersonalizarBebidaViewModel
+@{
+    ViewData["Title"] = "Personalizar Bebida";
+}
+
+<link rel="stylesheet" href="~/css/PersonalizarBebida.css" />
+
+
+
+<div class="personalizar-container fade-in-up">
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="main-card">
+                <div class="bebida-header">
+                    <h4><i class="fas fa-glass-whiskey"></i> Personalizar: @Model.Bebida.Nombre</h4>
+                    <small style="opacity: 0.9;">Elige el tamaño perfecto para tu bebida</small>
+                </div>
+                <div class="main-card-body">
+                    <form method="post" asp-action="ProcesarPersonalizacionBebida">
+                        <input type="hidden" asp-for="BebidaId" />
+                        <input type="hidden" name="tamanioSeleccionado" id="tamanioSeleccionadoHidden" value="@Model.TamanioSeleccionado" />
+                        <input type="hidden" name="notasAdicionales" id="notasAdicionalesHidden" value="@Model.NotasAdicionales" />
+
+                        <!-- INFORMACIÓN DE LA BEBIDA -->
+                        <div class="bebida-image-container">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <img src="@(Model.Bebida.ImagenUrl ?? "/images/bebida-placeholder.jpg")"
+                                         class="bebida-image"
+                                         alt="@Model.Bebida.Nombre">
+                                </div>
+                                <div class="col-md-7 bebida-info">
+                                    <h5>@Model.Bebida.Nombre</h5>
+                                    <p>@Model.Bebida.Descripcion</p>
+                                    @if (Model.Bebida.EsAlcoholica)
+                                    {
+                                        <span class="badge-alcoholico">
+                                            <i class="fas fa-exclamation-triangle"></i> Bebida Alcohólica +18
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SELECCIÓN DE TAMAÑO -->
+                        <div class="tamanios-section">
+                            <div class="section-title text-info">
+                                <i class="fas fa-arrows-alt-v"></i>
+                                <span>Selecciona el Tamaño</span>
+                            </div>
+                            <p class="section-description">
+                                Elige el tamaño que mejor se adapte a tu sed
+                            </p>
+
+                            <div class="row g-4">
+                                @foreach (var tamanio in Model.TamaniosDisponibles)
+                                {
+                                    var isChecked = Model.TamanioSeleccionado == tamanio.Key;
+                                    var inputId = $"tamanio_{(int)tamanio.Key}";
+                                    var partes = tamanio.Value.Split(" - ");
+                                    var nombreTamanio = partes[0];
+                                    var precio = partes.Length > 1 ? partes[1] : "";
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="tamanio-card @(isChecked ? "selected" : "")"
+                                             data-tamanio="@tamanio.Key">
+                                            <div class="card-body text-center">
+                                                <div class="form-check d-flex justify-content-center mb-3">
+                                                    <input class="form-check-input"
+                                                           type="radio"
+                                                           name="TamanioSeleccionado"
+                                                           value="@tamanio.Key"
+                                                           id="@inputId"
+                                                           @(isChecked ? "checked" : "")>
+                                                </div>
+
+                                                <div class="tamanio-icon">
+                                                    @if (tamanio.Key == Tamanio.Pequeno)
+                                                    {
+                                                        <i class="fas fa-wine-glass"></i>
+                                                    }
+                                                    else if (tamanio.Key == Tamanio.Mediano)
+                                                    {
+                                                        <i class="fas fa-glass-whiskey"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-beer"></i>
+                                                    }
+                                                </div>
+
+                                                <div class="tamanio-label">@nombreTamanio</div>
+                                                <div class="tamanio-precio">@precio</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- NOTAS ESPECIALES -->
+                        <div class="notas-section">
+                            <div class="section-title" style="color: #4facfe; margin-bottom: 15px;">
+                                <i class="fas fa-edit"></i>
+                                <span>Notas Especiales</span>
+                            </div>
+                            <textarea asp-for="NotasAdicionales" class="form-control" rows="4"
+                                      placeholder="¿Alguna preferencia? Ej: Sin hielo, con limón, extra fruta, temperatura específica..."></textarea>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-agregar-bebida">
+                                <i class="fas fa-shopping-cart"></i> Agregar al Carrito ·
+                                <span id="precioTotal">S/. @Model.PrecioFinal.ToString("0.00")</span>
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-volver">
+                                <i class="fas fa-arrow-left"></i> Volver al Menú
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DEL PEDIDO -->
+        <div class="col-lg-4">
+            <div class="resumen-card">
+                <div class="resumen-header">
+                    <h5><i class="fas fa-receipt"></i> Resumen de tu Pedido</h5>
+                </div>
+                <div class="resumen-body">
+                    <div class="resumen-bebida">
+                        <h6 style="color: #4facfe; font-weight: 700; margin-bottom: 8px;">
+                            @Model.Bebida.Nombre
+                        </h6>
+                        <p class="text-muted small mb-0">@Model.Bebida.Descripcion</p>
+                    </div>
+
+                    <!-- DETALLES DE LA SELECCIÓN -->
+                    <div class="mb-3">
+                        <div class="resumen-item">
+                            <i class="fas fa-arrows-alt-v"></i>
+                            <strong>Tamaño:</strong>
+                            <div id="resumenTamanio" class="resumen-valor">
+                                @Model.TamanioSeleccionado
+                            </div>
+                        </div>
+
+                        <div class="resumen-item">
+                            <i class="fas fa-tint"></i>
+                            <strong>Capacidad:</strong>
+                            <div id="resumenMililitros" class="resumen-valor">
+                                @Model.Bebida.Mililitros ml
+                            </div>
+                        </div>
+
+                        @if (Model.Bebida.EsAlcoholica)
+                        {
+                            <div class="resumen-item">
+                                <i class="fas fa-wine-bottle"></i>
+                                <strong>Tipo:</strong>
+                                <div class="resumen-valor">
+                                    <span class="badge bg-warning text-dark">Alcohólica</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <hr style="border-color: #e2e8f0;">
+
+                    <!-- PRECIO TOTAL -->
+                    <div class="precio-desglose">
+                        <div class="precio-row precio-total">
+                            <span>Total:</span>
+                            <span id="precioResumen" class="amount" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                S/. @Model.PrecioFinal.ToString("0.00")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Precios por tamaño - usando JSON desde el ViewModel
+        const precios = @Html.Raw(Model.PreciosJson);
+
+        // Mililitros por tamaño - usando JSON desde el ViewModel
+        const mililitros = @Html.Raw(Model.MililitrosJson);
+
+        function seleccionarTamanio(tamanioElement) {
+            const tamanio = tamanioElement.getAttribute('data-tamanio');
+
+            // Actualizar radio button
+            const radio = document.querySelector(`input[value="${tamanio}"]`);
+            if (radio) {
+                radio.checked = true;
+
+                // Actualizar estilos de las tarjetas
+                document.querySelectorAll('.tamanio-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                tamanioElement.classList.add('selected');
+
+                // Actualizar precios y datos del formulario
+                actualizarPrecioYResumen();
+            }
+        }
+
+        function actualizarPrecioYResumen() {
+            const radioSeleccionado = document.querySelector('input[name="TamanioSeleccionado"]:checked');
+            if (!radioSeleccionado) return;
+
+            const tamanioSeleccionado = radioSeleccionado.value;
+            const precio = precios[tamanioSeleccionado];
+            const mililitrosSeleccionados = mililitros[tamanioSeleccionado];
+
+            // Actualizar campos hidden del formulario
+            document.getElementById('tamanioSeleccionadoHidden').value = tamanioSeleccionado;
+
+            // Actualizar precios visibles
+            document.getElementById('precioTotal').textContent = 'S/. ' + precio.toFixed(2);
+            document.getElementById('precioResumen').textContent = 'S/. ' + precio.toFixed(2);
+
+            // Actualizar resumen de tamaño y mililitros
+            document.getElementById('resumenTamanio').textContent = tamanioSeleccionado;
+            document.getElementById('resumenMililitros').textContent = mililitrosSeleccionados + ' ml';
+        }
+
+        // Actualizar notas cuando cambie el textarea
+        document.querySelector('[name="NotasAdicionales"]').addEventListener('input', function() {
+            document.getElementById('notasAdicionalesHidden').value = this.value;
+        });
+
+        // Inicializar eventos
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Precios:', precios);
+            console.log('Mililitros:', mililitros);
+
+            // Agregar evento click a las tarjetas
+            document.querySelectorAll('.tamanio-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    seleccionarTamanio(this);
+                });
+            });
+
+            // Agregar evento change a los radio buttons
+            document.querySelectorAll('input[name="TamanioSeleccionado"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Encontrar la tarjeta correspondiente y actualizar estilos
+                    const card = document.querySelector(`[data-tamanio="${this.value}"]`);
+                    if (card) {
+                        document.querySelectorAll('.tamanio-card').forEach(c => {
+                            c.classList.remove('selected');
+                        });
+                        card.classList.add('selected');
+                    }
+                    actualizarPrecioYResumen();
+                });
+            });
+
+            // Inicializar estilos basados en la selección actual
+            const radioInicial = document.querySelector('input[name="TamanioSeleccionado"]:checked');
+            if (radioInicial) {
+                const cardInicial = document.querySelector(`[data-tamanio="${radioInicial.value}"]`);
+                if (cardInicial) {
+                    cardInicial.classList.add('selected');
+                }
+            }
+
+            // Ejecutar una vez al cargar para inicializar
+            actualizarPrecioYResumen();
+        });
+    </script>
+}

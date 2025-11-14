@@ -1,0 +1,842 @@
+﻿@model Restaurante.Models.Pedido
+@{
+    ViewData["Title"] = "Pedido Recibido";
+}
+
+<style>
+    .confirmacion-container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .pedido-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: slideUp 0.5s ease;
+    }
+
+    @@keyframes slideUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .pedido-header {
+        background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .check-icon {
+        width: 80px;
+        height: 80px;
+        background: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        animation: popIn 0.6s ease;
+    }
+
+    @@keyframes popIn {
+        0%
+
+    {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .check-icon i {
+        font-size: 2.5rem;
+        color: #27ae60;
+    }
+
+    .pedido-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .pedido-header p {
+        font-size: 1.1rem;
+        margin: 10px 0;
+        opacity: 0.95;
+    }
+
+    .numero-pedido-grande {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 15px 30px;
+        display: inline-block;
+        margin-top: 20px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+
+    .pedido-body {
+        padding: 40px 30px;
+    }
+
+    .info-importante {
+        background: #fff3cd;
+        border-left: 5px solid #ffc107;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+        .info-importante.online {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+        }
+
+        .info-importante i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-importante.online i {
+            color: #17a2b8;
+        }
+
+        .info-importante i:not(.online i) {
+            color: #ffc107;
+        }
+
+    .info-importante-content {
+        flex: 1;
+    }
+
+        .info-importante-content h5 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .info-importante-content p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+    .datos-pedido, .items-pedido {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+        .datos-pedido h4, .items-pedido h4 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+            .datos-pedido h4 i, .items-pedido h4 i {
+                margin-right: 8px;
+            }
+
+    .dato-item {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        align-items: flex-start;
+    }
+
+        .dato-item:last-child {
+            border-bottom: none;
+        }
+
+        .dato-item i {
+            color: #667eea;
+            margin-right: 12px;
+            margin-top: 3px;
+            font-size: 1.1rem;
+            width: 20px;
+            flex-shrink: 0;
+        }
+
+    .dato-label {
+        font-weight: 600;
+        color: #2c3e50;
+        min-width: 130px;
+        flex-shrink: 0;
+    }
+
+    .dato-valor {
+        color: #666;
+        flex: 1;
+        word-break: break-word;
+    }
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        gap: 15px;
+    }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-nombre {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+    .item-cantidad {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+
+    .item-precio {
+        font-weight: 600;
+        color: #27ae60;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .total-final {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 25px;
+        color: white;
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .total-final span:first-child {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .total-final span:last-child {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+    .acciones {
+        display: grid;
+        gap: 15px;
+    }
+
+    .btn-accion {
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 10px;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+        .btn-accion i {
+            margin-right: 8px;
+        }
+
+    .btn-inicio {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        color: white;
+    }
+
+        .btn-inicio:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+            color: white;
+        }
+
+    .btn-imprimir {
+        background: white;
+        color: #2c3e50;
+        border: 2px solid #e0e0e0;
+    }
+
+        .btn-imprimir:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+    /* ============================================
+           RESPONSIVE - TABLETS
+           ============================================ */
+    @@media (max-width: 991px) {
+        .confirmacion-container
+
+    {
+        margin: 40px auto;
+    }
+
+    .pedido-body {
+        padding: 35px 25px;
+    }
+
+    }
+
+    /* ============================================
+           RESPONSIVE - MÓVILES
+           ============================================ */
+    @@media (max-width: 768px) {
+        .confirmacion-container
+
+    {
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .pedido-card {
+        border-radius: 12px;
+    }
+
+    .pedido-header {
+        padding: 30px 20px;
+    }
+
+        .pedido-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .pedido-header p {
+            font-size: 1rem;
+        }
+
+    .check-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 15px;
+    }
+
+        .check-icon i {
+            font-size: 2rem;
+        }
+
+    .numero-pedido-grande {
+        font-size: 1.2rem;
+        padding: 12px 25px;
+        letter-spacing: 1px;
+    }
+
+    .pedido-body {
+        padding: 25px 20px;
+    }
+
+    .info-importante {
+        padding: 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .info-importante i {
+            font-size: 1.3rem;
+        }
+
+    .info-importante-content h5 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .info-importante-content p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .datos-pedido, .items-pedido {
+        padding: 20px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+        .datos-pedido h4, .items-pedido h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+        }
+
+    .dato-item {
+        flex-direction: column;
+        padding: 10px 0;
+        gap: 5px;
+    }
+
+        .dato-item i {
+            display: none;
+        }
+
+    .dato-label {
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+        min-width: auto;
+    }
+
+    .dato-valor {
+        font-size: 0.95rem;
+        padding-left: 0;
+    }
+
+    .item {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 0;
+    }
+
+    .item-nombre {
+        font-size: 0.95rem;
+        margin-bottom: 3px;
+    }
+
+    .item-cantidad {
+        font-size: 0.85rem;
+    }
+
+    .item-precio {
+        font-size: 1.05rem;
+        align-self: flex-start;
+    }
+
+    .total-final {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        padding: 20px;
+    }
+
+        .total-final span:first-child {
+            font-size: 1.1rem;
+        }
+
+        .total-final span:last-child {
+            font-size: 1.7rem;
+        }
+
+    .acciones {
+        gap: 12px;
+    }
+
+    .btn-accion {
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+
+        .btn-accion i {
+            margin-right: 6px;
+        }
+
+    }
+
+    /* ============================================
+           MÓVILES PEQUEÑOS
+           ============================================ */
+    @@media (max-width: 480px) {
+        .confirmacion-container
+
+    {
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .pedido-header {
+        padding: 25px 15px;
+    }
+
+        .pedido-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .pedido-header p {
+            font-size: 0.9rem;
+        }
+
+    .check-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+        .check-icon i {
+            font-size: 1.8rem;
+        }
+
+    .numero-pedido-grande {
+        font-size: 1.1rem;
+        padding: 10px 20px;
+    }
+
+    .pedido-body {
+        padding: 20px 15px;
+    }
+
+    .info-importante {
+        padding: 12px;
+    }
+
+        .info-importante i {
+            font-size: 1.2rem;
+        }
+
+    .info-importante-content h5 {
+        font-size: 0.95rem;
+    }
+
+    .info-importante-content p {
+        font-size: 0.85rem;
+    }
+
+    .datos-pedido, .items-pedido {
+        padding: 15px 12px;
+    }
+
+        .datos-pedido h4, .items-pedido h4 {
+            font-size: 1rem;
+        }
+
+    .dato-label {
+        font-size: 0.85rem;
+    }
+
+    .dato-valor {
+        font-size: 0.9rem;
+    }
+
+    .item-nombre {
+        font-size: 0.9rem;
+    }
+
+    .item-cantidad {
+        font-size: 0.8rem;
+    }
+
+    .item-precio {
+        font-size: 1rem;
+    }
+
+    .total-final {
+        padding: 18px 15px;
+    }
+
+        .total-final span:first-child {
+            font-size: 1rem;
+        }
+
+        .total-final span:last-child {
+            font-size: 1.5rem;
+        }
+
+    .btn-accion {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+    }
+
+    }
+
+    /* ============================================
+           MEJORAS UX MÓVILES
+           ============================================ */
+    @@media (max-width: 768px) {
+        /* Prevenir zoom en iOS */
+        *
+
+    {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Mejor espaciado táctil */
+    .btn-accion {
+        min-height: 48px;
+    }
+
+    /* Scroll suave */
+    .pedido-card {
+        scroll-behavior: smooth;
+    }
+
+    /* Mejor visualización del número de pedido */
+    .numero-pedido-grande {
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    }
+    }
+
+    /* ============================================
+           VERSIÓN PARA IMPRESIÓN
+           ============================================ */
+    @@media print {
+        .confirmacion-container
+
+    {
+        margin: 0;
+        padding: 20px;
+    }
+
+    .pedido-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .acciones {
+        display: none !important;
+    }
+
+    .pedido-header {
+        background: #27ae60 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .total-final {
+        background: #667eea !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .info-importante {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Evitar saltos de página dentro de secciones */
+    .datos-pedido, .items-pedido, .info-importante {
+        page-break-inside: avoid;
+    }
+
+    }
+
+    /* ============================================
+           LANDSCAPE MÓVIL
+           ============================================ */
+    @@media (max-width: 768px) and (orientation: landscape) {
+        .pedido-header
+
+    {
+        padding: 25px 20px;
+    }
+
+    .check-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+    }
+
+        .check-icon i {
+            font-size: 1.8rem;
+        }
+
+    .pedido-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .numero-pedido-grande {
+        margin-top: 10px;
+    }
+
+    .pedido-body {
+        padding: 20px;
+    }
+
+    }
+</style>
+
+<div class="confirmacion-container">
+    <div class="pedido-card">
+        <div class="pedido-header">
+            <div class="check-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>¡Pedido Recibido!</h2>
+            <p>Tu orden ha sido confirmada</p>
+            <div class="numero-pedido-grande">
+                #@Model.NumeroPedido
+            </div>
+        </div>
+
+        <div class="pedido-body">
+            @if (Model.MetodoPago == MetodoPago.PagoOnline)
+            {
+                <div class="info-importante online">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="info-importante-content">
+                        <h5>Pago Confirmado</h5>
+                        <p>Tu pago ha sido procesado exitosamente. Tu pedido está siendo preparado y estará listo pronto.</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="info-importante">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="info-importante-content">
+                        <h5>Pago Pendiente en Mostrador</h5>
+                        <p>Tu pedido será preparado cuando realices el pago en nuestro mostrador. Por favor, presenta este número de pedido: <strong>#@Model.NumeroPedido</strong></p>
+                    </div>
+                </div>
+            }
+
+            <div class="datos-pedido">
+                <h4><i class="fas fa-info-circle"></i> Información del Pedido</h4>
+
+                <div class="dato-item">
+                    <i class="fas fa-user"></i>
+                    <span class="dato-label">Cliente:</span>
+                    <span class="dato-valor">@Model.ClienteNombre</span>
+                </div>
+
+                <div class="dato-item">
+                    <i class="fas fa-utensils"></i>
+                    <span class="dato-label">Tipo de Pedido:</span>
+                    <span class="dato-valor">
+                        @(Model.TipoPedido == TipoPedido.ParaComerAqui ? "Para Comer Aquí" : "Para Llevar")
+                    </span>
+                </div>
+
+                <div class="dato-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="dato-label">Método de Pago:</span>
+                    <span class="dato-valor">
+                        @(Model.MetodoPago == MetodoPago.PagoOnline ? "Pago Online" : "Pago en Mostrador")
+                    </span>
+                </div>
+
+                <div class="dato-item">
+                    <i class="fas fa-calendar"></i>
+                    <span class="dato-label">Fecha:</span>
+                    <span class="dato-valor">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+
+                @if (Model.MetodoPago == MetodoPago.PagoOnline && Model.EstadoPago == EstadoPago.Pagado)
+                {
+                    <div class="dato-item">
+                        <i class="fas fa-check"></i>
+                        <span class="dato-label">Estado:</span>
+                        <span class="dato-valor" style="color: #27ae60; font-weight: 600;">Pagado y Confirmado</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="dato-item">
+                        <i class="fas fa-clock"></i>
+                        <span class="dato-label">Estado:</span>
+                        <span class="dato-valor" style="color: #f39c12; font-weight: 600;">Pendiente de Pago</span>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Notas))
+                {
+                    <div class="dato-item">
+                        <i class="fas fa-sticky-note"></i>
+                        <span class="dato-label">Notas:</span>
+                        <span class="dato-valor">@Model.Notas</span>
+                    </div>
+                }
+            </div>
+
+            <div class="items-pedido">
+                <h4><i class="fas fa-shopping-bag"></i> Tu Pedido</h4>
+
+                @foreach (var item in Model.Items)
+                {
+                    <div class="item">
+                        <div class="item-info">
+                            <div class="item-nombre">@item.NombreProducto</div>
+                            <div class="item-cantidad">
+                                Cantidad: @item.Cantidad × S/. @item.PrecioUnitario.ToString("0.00")
+                            </div>
+                        </div>
+                        <div class="item-precio">
+                            S/. @item.Subtotal.ToString("0.00")
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="total-final">
+                <span>Total @(Model.EstadoPago == EstadoPago.Pagado ? "Pagado" : "a Pagar"):</span>
+                <span>S/. @Model.Total.ToString("0.00")</span>
+            </div>
+
+            <div class="acciones">
+                <a href="@Url.Action("Index", "Home")" class="btn-accion btn-inicio">
+                    <i class="fas fa-home"></i> Volver al Inicio
+                </a>
+                <button class="btn-accion btn-imprimir" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimir Comprobante
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        console.log('Pedido #@Model.NumeroPedido recibido correctamente');
+
+        // Agregar feedback táctil en móviles
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.btn-accion').forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        }
+    </script>
+}

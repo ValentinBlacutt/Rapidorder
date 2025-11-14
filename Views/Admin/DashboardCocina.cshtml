@@ -1,0 +1,111 @@
+﻿<!-- Views/Admin/DashboardCocina.cshtml -->
+@{
+    ViewData["Title"] = "Dashboard Cocina";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link rel="stylesheet" href="~/css/DashBoardCocina.css" />
+
+<div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+    <h2 class="mb-0">
+        <i class="fas fa-utensils me-2"></i>
+        <span class="d-none d-sm-inline">Dashboard Cocina</span>
+        <span class="d-inline d-sm-none">Cocina</span>
+    </h2>
+</div>
+
+<div class="row g-3 g-md-4">
+    <!-- Pedidos Pendientes -->
+    <div class="col-12 col-md-4">
+        <div class="card bg-warning text-dark h-100 shadow-sm">
+            <div class="card-body p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-1 fw-bold">@ViewBag.PedidosPendientes</h4>
+                        <p class="mb-0 small fw-medium">Pedidos Pendientes</p>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-clock fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 p-2 text-center d-md-none">
+                <small class="text-muted">Por preparar</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos En Preparación -->
+    <div class="col-12 col-md-4">
+        <div class="card bg-primary text-white h-100 shadow-sm">
+            <div class="card-body p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-1 fw-bold">@ViewBag.PedidosEnPreparacion</h4>
+                        <p class="mb-0 small fw-medium">En Preparación</p>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-utensils fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 p-2 text-center d-md-none">
+                <small class="text-white-50">En proceso</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos Listos -->
+    <div class="col-12 col-md-4">
+        <div class="card bg-success text-white h-100 shadow-sm">
+            <div class="card-body p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h4 class="mb-1 fw-bold">@ViewBag.PedidosListos</h4>
+                        <p class="mb-0 small fw-medium">Listos para Entregar</p>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 p-2 text-center d-md-none">
+                <small class="text-white-50">Completados</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón de Acción Principal -->
+<div class="row mt-3 mt-md-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body text-center p-4 p-md-5">
+                <div class="mb-3 d-md-none">
+                    <i class="fas fa-clipboard-list fa-3x text-primary"></i>
+                </div>
+                <h5 class="mb-3 d-none d-md-block">Gestión de Pedidos</h5>
+                <a href="/admin/pedidos" class="btn btn-primary btn-lg w-100 w-md-auto">
+                    <i class="fas fa-clipboard-list me-2"></i>
+                    <span>Ver Todos los Pedidos</span>
+                </a>
+                <p class="text-muted mt-3 mb-0 small d-none d-md-block">
+                    Administra y actualiza el estado de todos los pedidos
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen Rápido (Solo móvil) -->
+<div class="row mt-3 d-md-none">
+    <div class="col-12">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle fa-lg me-3"></i>
+            <div class="small">
+                <strong>Total en cola:</strong>
+                @(ViewBag.PedidosPendientes + ViewBag.PedidosEnPreparacion) pedidos
+            </div>
+        </div>
+    </div>
+</div>
+

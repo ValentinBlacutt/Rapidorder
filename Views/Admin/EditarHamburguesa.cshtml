@@ -1,0 +1,260 @@
+﻿<!-- Views/Admin/EditarHamburguesa.cshtml -->
+@model Hamburguesa
+@{
+    ViewData["Title"] = "Editar Hamburguesa";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="mb-4">
+    <a href="@Url.Action("Hamburguesas", "Admin")" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Volver a Hamburguesas
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">
+            <i class="fas fa-edit me-2"></i>@ViewData["Title"]
+        </h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" asp-action="EditarHamburguesa">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Disponible" />
+            <input type="hidden" asp-for="Categoria" />
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="row">
+                <!-- Información Básica -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label">
+                            <i class="fas fa-hamburger me-1"></i>Nombre *
+                        </label>
+                        <input asp-for="Nombre" class="form-control" placeholder="Ej: Hamburguesa Clásica" required />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Descripcion" class="form-label">
+                            <i class="fas fa-align-left me-1"></i>Descripción *
+                        </label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Describe la hamburguesa..." required></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Precio" class="form-label">
+                            <i class="fas fa-dollar-sign me-1"></i>Precio Base (S/.) *
+                        </label>
+                        <input asp-for="Precio" type="number" step="0.01" class="form-control" placeholder="0.00" required />
+                        <span asp-validation-for="Precio" class="text-danger"></span>
+                        <small class="text-muted">Precio sin ingredientes extras</small>
+                    </div>
+                </div>
+
+                <!-- Imagen -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-image me-1"></i>Imagen Actual
+                        </label>
+                        @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                        {
+                            <div class="text-center mb-3">
+                                <img src="@Model.ImagenUrl" alt="@Model.Nombre" class="img-fluid rounded" style="max-height: 200px;" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Sin imagen
+                            </div>
+                        }
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">
+                            <i class="fas fa-upload me-1"></i>Cambiar Imagen
+                        </label>
+                        <input type="file" name="imagen" id="imagen" class="form-control" accept="image/jpeg,image/png,image/webp" />
+                        <small class="text-muted">Formatos: JPG, PNG, WEBP. Deja vacío para mantener la actual.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ImagenUrl" class="form-label">
+                            <i class="fas fa-link me-1"></i>O URL de Imagen
+                        </label>
+                        <input asp-for="ImagenUrl" class="form-control" placeholder="https://ejemplo.com/imagen.jpg" />
+                        <span asp-validation-for="ImagenUrl" class="text-danger"></span>
+                        <small class="text-muted">URL externa de la imagen (opcional)</small>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Ingredientes Incluidos -->
+            <div class="mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-list-check me-2"></i>Ingredientes Incluidos (Base)
+                </h5>
+                <p class="text-muted">Selecciona los ingredientes que vienen por defecto con la hamburguesa</p>
+
+                <div class="row">
+                    @if (ViewBag.Ingredientes != null)
+                    {
+                        @foreach (var ingrediente in ViewBag.Ingredientes)
+                        {
+                            var estaIncluido = Model.Ingredientes?.Any(ih => ih.IngredienteId == ingrediente.Id && !ih.EsExtra) ?? false;
+                            var esObligatorio = Model.Ingredientes?.FirstOrDefault(ih => ih.IngredienteId == ingrediente.Id && !ih.EsExtra)?.esObligatorio ?? false;
+
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 @(estaIncluido ? "border-primary" : "")">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input ingrediente-incluido"
+                                                   type="checkbox"
+                                                   name="ingredientesIncluidos"
+                                                   value="@ingrediente.Id"
+                                                   id="ing_@ingrediente.Id"
+                                                   @(estaIncluido ? "checked" : "") />
+                                            <label class="form-check-label fw-bold" for="ing_@ingrediente.Id">
+                                                @ingrediente.Nombre
+                                            </label>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(ingrediente.Descripcion))
+                                        {
+                                            <small class="text-muted d-block mt-1">@ingrediente.Descripcion</small>
+                                        }
+                                        <div class="form-check mt-2 ms-3">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   name="ingredientesObligatorios"
+                                                   value="true"
+                                                   id="obl_@ingrediente.Id"
+                                                   @(esObligatorio ? "checked" : "")
+                                                   data-ingrediente="@ingrediente.Id" />
+                                            <label class="form-check-label small" for="obl_@ingrediente.Id">
+                                                <i class="fas fa-lock me-1"></i>Obligatorio (no removible)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay ingredientes disponibles. Crea ingredientes primero.
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Ingredientes Extras -->
+            <div class="mb-4">
+                <h5 class="mb-3">
+                    <i class="fas fa-plus-circle me-2"></i>Ingredientes Extras Disponibles
+                </h5>
+                <p class="text-muted">Ingredientes que el cliente puede agregar por un costo adicional</p>
+
+                <div class="row">
+                    @if (ViewBag.Ingredientes != null)
+                    {
+                        @foreach (var ingrediente in ViewBag.Ingredientes)
+                        {
+                            var esExtra = Model.Ingredientes?.Any(ih => ih.IngredienteId == ingrediente.Id && ih.EsExtra) ?? false;
+
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 @(esExtra ? "border-success" : "")">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   name="ingredientesExtras"
+                                                   value="@ingrediente.Id"
+                                                   id="extra_@ingrediente.Id"
+                                                   @(esExtra ? "checked" : "") />
+                                            <label class="form-check-label fw-bold" for="extra_@ingrediente.Id">
+                                                @ingrediente.Nombre
+                                                @if (ingrediente.PrecioAdicional > 0)
+                                                {
+                                                    <span class="badge bg-success ms-1">+S/. @ingrediente.PrecioAdicional.ToString("0.00")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-info ms-1">Gratis</span>
+                                                }
+                                            </label>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(ingrediente.Descripcion))
+                                        {
+                                            <small class="text-muted d-block mt-1">@ingrediente.Descripcion</small>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="@Url.Action("Hamburguesas", "Admin")" class="btn btn-secondary">
+                    <i class="fas fa-times me-1"></i>Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save me-1"></i>Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sincronizar checkboxes de obligatorio con los de incluido
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxesIncluidos = document.querySelectorAll('.ingrediente-incluido');
+
+            checkboxesIncluidos.forEach(checkbox => {
+                const ingredienteId = checkbox.value;
+                const checkboxObligatorio = document.querySelector(`input[data-ingrediente="${ingredienteId}"]`);
+
+                if (checkboxObligatorio) {
+                    // Deshabilitar obligatorio si no está incluido
+                    checkboxObligatorio.disabled = !checkbox.checked;
+                    if (!checkbox.checked) {
+                        checkboxObligatorio.checked = false;
+                    }
+
+                    // Listener para cambios
+                    checkbox.addEventListener('change', function() {
+                        checkboxObligatorio.disabled = !this.checked;
+                        if (!this.checked) {
+                            checkboxObligatorio.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

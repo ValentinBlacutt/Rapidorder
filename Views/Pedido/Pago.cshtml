@@ -1,0 +1,1032 @@
+﻿@model Restaurante.Models.Pedido
+@{
+    ViewData["Title"] = "Pagar Pedido";
+}
+
+<style>
+    .pago-container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .pago-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        animation: slideUp 0.5s ease;
+    }
+
+    @@keyframes slideUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .pago-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+        .pago-header i.fa-3x {
+            margin-bottom: 15px;
+        }
+
+        .pago-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+    .numero-pedido {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 10px 25px;
+        display: inline-block;
+        margin-top: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+        .numero-pedido i {
+            margin-right: 5px;
+        }
+
+    .pago-body {
+        padding: 40px 30px;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+        .info-section h4 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+            .info-section h4 i {
+                margin-right: 8px;
+            }
+
+    .info-item {
+        display: flex;
+        margin-bottom: 15px;
+        align-items: flex-start;
+    }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-item i {
+            color: #667eea;
+            margin-right: 12px;
+            margin-top: 3px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .info-item strong {
+            color: #2c3e50;
+            min-width: 120px;
+            flex-shrink: 0;
+        }
+
+        .info-item span {
+            color: #7f8c8d;
+            flex: 1;
+            word-break: break-word;
+        }
+
+    .items-list {
+        margin-top: 20px;
+    }
+
+    .item-pedido {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background 0.2s ease;
+        gap: 15px;
+    }
+
+        .item-pedido:hover {
+            background: #f8f9fa;
+        }
+
+        .item-pedido:last-child {
+            border-bottom: none;
+        }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-nombre {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+    .item-descripcion {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 3px;
+    }
+
+        .item-descripcion i {
+            margin-right: 5px;
+        }
+
+    .item-precio {
+        text-align: right;
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+
+    .item-cantidad {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .item-subtotal {
+        font-weight: 600;
+        color: #27ae60;
+        font-size: 1.1rem;
+    }
+
+    .totales-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 25px;
+        color: white;
+        margin: 30px 0;
+    }
+
+    .total-linea {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+    }
+
+    .total-final {
+        border-top: 2px solid rgba(255, 255, 255, 0.3);
+        padding-top: 15px;
+        margin-top: 15px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* ESTILOS PARA MÉTODO DE PAGO */
+    .metodo-pago {
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border-left: 5px solid;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+        .metodo-pago.online {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .metodo-pago.mostrador {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .metodo-pago i {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .metodo-pago.online i {
+            color: #2196f3;
+        }
+
+        .metodo-pago.mostrador i {
+            color: #ffc107;
+        }
+
+    .metodo-pago-content {
+        flex: 1;
+    }
+
+        .metodo-pago-content strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .metodo-pago-content p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+    /* FORMULARIO DE PAGO ONLINE */
+    .pago-online-form {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+        .pago-online-form h5 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+            .pago-online-form h5 i {
+                margin-right: 8px;
+                color: #27ae60;
+            }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+    .card-icons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+        .card-icons i {
+            font-size: 2rem;
+            color: #ccc;
+        }
+
+        .card-icons .fa-cc-visa {
+            color: #1a1f71;
+        }
+
+        .card-icons .fa-cc-mastercard {
+            color: #eb001b;
+        }
+
+        .card-icons .fa-cc-amex {
+            color: #006fcf;
+        }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .btn-pagar {
+        width: 100%;
+        padding: 18px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        cursor: pointer;
+    }
+
+        .btn-pagar:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-pagar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-pagar i {
+            margin-right: 10px;
+        }
+
+    .btn-cancelar {
+        width: 100%;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 500;
+        background: white;
+        border: 2px solid #e74c3c;
+        border-radius: 10px;
+        color: #e74c3c;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+        .btn-cancelar:hover {
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-cancelar i {
+            margin-right: 8px;
+        }
+
+    .alert-info-mostrador {
+        background: #e8f4f8;
+        border-left: 4px solid #2196f3;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+        .alert-info-mostrador i {
+            color: #2196f3;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .alert-info-mostrador strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+    /* ============================================
+           RESPONSIVE - TABLETS
+           ============================================ */
+    @@media (max-width: 991px) {
+        .pago-container
+
+    {
+        margin: 40px auto;
+    }
+
+    .pago-body {
+        padding: 35px 25px;
+    }
+
+    }
+
+    /* ============================================
+           RESPONSIVE - MÓVILES
+           ============================================ */
+    @@media (max-width: 768px) {
+        .pago-container
+
+    {
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .pago-card {
+        border-radius: 12px;
+    }
+
+    .pago-header {
+        padding: 30px 20px;
+    }
+
+        .pago-header i.fa-3x {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .pago-header h2 {
+            font-size: 1.5rem;
+        }
+
+    .numero-pedido {
+        font-size: 1rem;
+        padding: 8px 20px;
+    }
+
+    .pago-body {
+        padding: 25px 20px;
+    }
+
+    .info-section {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+
+        .info-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+        }
+
+    .info-item {
+        flex-direction: column;
+        margin-bottom: 12px;
+        gap: 5px;
+    }
+
+        .info-item i {
+            display: none;
+        }
+
+        .info-item strong {
+            margin-bottom: 3px;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+
+        .info-item span {
+            font-size: 0.95rem;
+            padding-left: 0;
+        }
+
+    .item-pedido {
+        flex-direction: column;
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .item-nombre {
+        font-size: 0.95rem;
+    }
+
+    .item-descripcion {
+        font-size: 0.85rem;
+    }
+
+    .item-precio {
+        margin-top: 8px;
+        text-align: left;
+        min-width: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .item-cantidad {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+
+    .item-subtotal {
+        font-size: 1rem;
+    }
+
+    .totales-box {
+        padding: 20px 15px;
+        margin: 20px 0;
+        border-radius: 10px;
+    }
+
+    .total-linea {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .total-final {
+        font-size: 1.3rem;
+        padding-top: 12px;
+        margin-top: 12px;
+    }
+
+    .metodo-pago {
+        padding: 18px 15px;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .metodo-pago i {
+            font-size: 1.3rem;
+        }
+
+    .metodo-pago-content strong {
+        font-size: 1rem;
+    }
+
+    .metodo-pago-content p {
+        font-size: 0.9rem;
+    }
+
+    .pago-online-form {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+
+        .pago-online-form h5 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            padding: 10px 12px;
+            font-size: 16px; /* Prevenir zoom en iOS */
+        }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .card-icons {
+        gap: 8px;
+    }
+
+        .card-icons i {
+            font-size: 1.8rem;
+        }
+
+    .btn-pagar {
+        padding: 16px;
+        font-size: 1.1rem;
+    }
+
+    .btn-cancelar {
+        padding: 13px;
+        font-size: 0.95rem;
+    }
+
+    .alert-info-mostrador {
+        padding: 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .alert-info-mostrador i {
+            font-size: 1.2rem;
+        }
+
+        .alert-info-mostrador strong {
+            font-size: 0.95rem;
+        }
+
+    }
+
+    /* ============================================
+           MÓVILES PEQUEÑOS
+           ============================================ */
+    @@media (max-width: 480px) {
+        .pago-container
+
+    {
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .pago-header {
+        padding: 25px 15px;
+    }
+
+        .pago-header i.fa-3x {
+            font-size: 2rem;
+        }
+
+        .pago-header h2 {
+            font-size: 1.3rem;
+        }
+
+    .numero-pedido {
+        font-size: 0.95rem;
+        padding: 8px 18px;
+    }
+
+    .pago-body {
+        padding: 20px 15px;
+    }
+
+    .info-section {
+        padding: 15px 12px;
+    }
+
+        .info-section h4 {
+            font-size: 1rem;
+        }
+
+    .info-item strong {
+        font-size: 0.85rem;
+    }
+
+    .info-item span {
+        font-size: 0.9rem;
+    }
+
+    .item-pedido {
+        padding: 10px;
+    }
+
+    .item-nombre {
+        font-size: 0.9rem;
+    }
+
+    .item-descripcion {
+        font-size: 0.8rem;
+    }
+
+    .item-subtotal {
+        font-size: 0.95rem;
+    }
+
+    .totales-box {
+        padding: 18px 12px;
+    }
+
+    .total-linea {
+        font-size: 0.95rem;
+    }
+
+    .total-final {
+        font-size: 1.2rem;
+    }
+
+    .metodo-pago {
+        padding: 15px 12px;
+    }
+
+        .metodo-pago i {
+            font-size: 1.2rem;
+        }
+
+    .metodo-pago-content strong {
+        font-size: 0.95rem;
+    }
+
+    .metodo-pago-content p {
+        font-size: 0.85rem;
+    }
+
+    .pago-online-form {
+        padding: 15px 12px;
+    }
+
+        .pago-online-form h5 {
+            font-size: 0.95rem;
+        }
+
+    .form-group input {
+        padding: 10px;
+    }
+
+    .btn-pagar {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    .btn-cancelar {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    }
+
+    /* ============================================
+           MEJORAS UX MÓVILES
+           ============================================ */
+    @@media (max-width: 768px) {
+        *
+
+    {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-pagar, .btn-cancelar {
+        min-height: 48px;
+    }
+
+    /* Mejor visualización de campos de tarjeta */
+    .form-group input {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    }
+
+    /* ============================================
+           LANDSCAPE MÓVIL
+           ============================================ */
+    @@media (max-width: 768px) and (orientation: landscape) {
+        .pago-header
+
+    {
+        padding: 20px 20px;
+    }
+
+    .pago-header i.fa-3x {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+
+    .pago-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .pago-body {
+        padding: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    }
+</style>
+
+<div class="pago-container">
+    <div class="pago-card">
+        <div class="pago-header">
+            <i class="fas fa-credit-card fa-3x"></i>
+            <h2>Confirmar Pago</h2>
+            <div class="numero-pedido">
+                <i class="fas fa-hashtag"></i>
+                Pedido: @Model.NumeroPedido
+            </div>
+        </div>
+
+        <div class="pago-body">
+            <div class="info-section">
+                <h4>
+                    <i class="fas fa-user"></i>
+                    Información del Pedido
+                </h4>
+                <div class="info-item">
+                    <i class="fas fa-user-circle"></i>
+                    <strong>Cliente:</strong>
+                    <span>@Model.ClienteNombre</span>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-utensils"></i>
+                    <strong>Tipo de Pedido:</strong>
+                    <span>@(Model.TipoPedido == TipoPedido.ParaComerAqui ? "Para Comer Aquí" : "Para Llevar")</span>
+                </div>
+
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <strong>Fecha:</strong>
+                    <span>@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Notas))
+                {
+                    <div class="info-item">
+                        <i class="fas fa-sticky-note"></i>
+                        <strong>Notas:</strong>
+                        <span>@Model.Notas</span>
+                    </div>
+                }
+            </div>
+
+            <div class="info-section">
+                <h4>
+                    <i class="fas fa-shopping-bag"></i>
+                    Detalle del Pedido
+                </h4>
+                <div class="items-list">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="item-pedido">
+                            <div class="item-info">
+                                <div class="item-nombre">@item.NombreProducto</div>
+                                @if (!string.IsNullOrEmpty(item.Descripcion))
+                                {
+                                    <div class="item-descripcion">@item.Descripcion</div>
+                                }
+                                @if (!string.IsNullOrEmpty(item.Notas))
+                                {
+                                    <div class="item-descripcion">
+                                        <i class="fas fa-info-circle"></i> @item.Notas
+                                    </div>
+                                }
+                            </div>
+                            <div class="item-precio">
+                                <div class="item-cantidad">x@item.Cantidad - S/. @item.PrecioUnitario.ToString("0.00")</div>
+                                <div class="item-subtotal">S/. @item.Subtotal.ToString("0.00")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="totales-box">
+                <div class="total-linea">
+                    <span>Subtotal:</span>
+                    <span>S/. @Model.Subtotal.ToString("0.00")</span>
+                </div>
+                <div class="total-linea">
+                    <span>Impuestos (18%):</span>
+                    <span>S/. @Model.Impuestos.ToString("0.00")</span>
+                </div>
+                <div class="total-final">
+                    <span>Total a Pagar:</span>
+                    <span>S/. @Model.Total.ToString("0.00")</span>
+                </div>
+            </div>
+
+            @* MOSTRAR FORMULARIO SEGÚN MÉTODO DE PAGO *@
+            @if (Model.MetodoPago == MetodoPago.PagoOnline)
+            {
+                <!-- PAGO ONLINE (FICTICIO) -->
+                <div class="metodo-pago online">
+                    <i class="fas fa-credit-card"></i>
+                    <div class="metodo-pago-content">
+                        <strong>Pago con Tarjeta</strong>
+                        <p>Ingresa los datos de tu tarjeta para completar el pago</p>
+                    </div>
+                </div>
+
+                <div class="pago-online-form">
+                    <h5><i class="fas fa-lock"></i> Datos de la Tarjeta</h5>
+
+                    <form asp-action="ConfirmarPago" method="post" id="form-pago-online">
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <div class="form-group">
+                            <label for="numero-tarjeta">Número de Tarjeta</label>
+                            <input type="text" id="numero-tarjeta" placeholder="1234 5678 9012 3456"
+                                   maxlength="19" required pattern="\d{4} \d{4} \d{4} \d{4}">
+                            <div class="card-icons">
+                                <i class="fab fa-cc-visa"></i>
+                                <i class="fab fa-cc-mastercard"></i>
+                                <i class="fab fa-cc-amex"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre-tarjeta">Nombre del Titular</label>
+                            <input type="text" id="nombre-tarjeta" placeholder="JUAN PEREZ" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fecha-venc">Fecha de Vencimiento</label>
+                                <input type="text" id="fecha-venc" placeholder="MM/AA"
+                                       maxlength="5" required pattern="\d{2}/\d{2}">
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV</label>
+                                <input type="text" id="cvv" placeholder="123"
+                                       maxlength="3" required pattern="\d{3}">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-pagar" id="btn-pagar-online">
+                            <i class="fas fa-lock"></i>
+                            Pagar S/. @Model.Total.ToString("0.00")
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <!-- PAGO EN MOSTRADOR -->
+                <div class="metodo-pago mostrador">
+                    <i class="fas fa-cash-register"></i>
+                    <div class="metodo-pago-content">
+                        <strong>Pago en Mostrador</strong>
+                        <p>Pagarás en efectivo o tarjeta cuando recojas tu pedido</p>
+                    </div>
+                </div>
+
+                <div class="alert-info-mostrador">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Importante:</strong> Tu pedido será preparado una vez que realices el pago en nuestro mostrador.
+                        Por favor dirígete a nuestro local con tu número de pedido.
+                    </div>
+                </div>
+
+                <form asp-action="ConfirmarPago" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-pagar">
+                        <i class="fas fa-check-circle"></i>
+                        Confirmar Pedido
+                    </button>
+                </form>
+            }
+
+            <a href="@Url.Action("Index", "Home")" class="btn btn-cancelar">
+                <i class="fas fa-times"></i>
+                Cancelar
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ✅ FORMATO AUTOMÁTICO DE NÚMERO DE TARJETA
+        const numeroTarjeta = document.getElementById('numero-tarjeta');
+        if (numeroTarjeta) {
+            numeroTarjeta.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
+        }
+
+        // ✅ FORMATO AUTOMÁTICO DE FECHA
+        const fechaVenc = document.getElementById('fecha-venc');
+        if (fechaVenc) {
+            fechaVenc.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
+
+        // ✅ SOLO NÚMEROS EN CVV
+        const cvv = document.getElementById('cvv');
+        if (cvv) {
+            cvv.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+
+        // ✅ SIMULACIÓN DE PROCESAMIENTO DE PAGO ONLINE
+        const formPagoOnline = document.getElementById('form-pago-online');
+        if (formPagoOnline) {
+            formPagoOnline.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const btnPagar = document.getElementById('btn-pagar-online');
+                btnPagar.disabled = true;
+                btnPagar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando pago...';
+
+                // Simular delay de procesamiento (2 segundos)
+                setTimeout(() => {
+                    // Aquí se enviaría el formulario real
+                    formPagoOnline.submit();
+                }, 2000);
+            });
+        }
+    </script>
+}

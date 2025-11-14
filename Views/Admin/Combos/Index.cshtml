@@ -1,0 +1,299 @@
+﻿@model IEnumerable<Restaurante.Models.Combo>
+@{
+    ViewData["Title"] = "Gestión de Combos";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link rel="stylesheet" href="~/css/comboAdmin.css" />
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title mb-0 h5 h-md-4">
+            <i class="fas fa-box me-2"></i>
+            <span class="d-none d-md-inline">@ViewData["Title"]</span>
+            <span class="d-inline d-md-none">Combos</span>
+        </h4>
+        <a asp-action="Crear" class="btn btn-success btn-sm btn-md-normal">
+            <i class="fas fa-plus me-1"></i>
+            <span class="d-none d-sm-inline">Nuevo</span>
+        </a>
+    </div>
+    <div class="card-body p-2 p-md-3">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No hay combos registrados.
+                <a asp-action="Crear" class="alert-link">Crear el primer combo</a>
+            </div>
+        }
+        else
+        {
+            <!-- Vista de tabla para desktop -->
+            <div class="table-responsive d-none d-lg-block">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Productos Incluidos</th>
+                            <th>Bebidas Disponibles</th>
+                            <th>Precio</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var combo in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@combo.ImagenUrl"
+                                         alt="@combo.Nombre"
+                                         class="img-thumbnail"
+                                         style="width: 80px; height: 80px; object-fit: cover;"
+                                         onerror="this.src='/images/combo-default.jpg'">
+                                </td>
+                                <td>
+                                    <strong>@combo.Nombre</strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@combo.Descripcion</small>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        @foreach (var item in combo.Items.Take(3))
+                                        {
+                                            <small>
+                                                <i class="fas fa-check text-success me-1"></i>
+                                                @item.Cantidad x @item.Producto.Nombre
+                                            </small>
+                                        }
+                                        @if (combo.Items.Count > 3)
+                                        {
+                                            <small class="text-muted">
+                                                +@(combo.Items.Count - 3) más...
+                                            </small>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (combo.BebidasDisponibles?.Any() == true)
+                                    {
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach (var bebida in combo.BebidasDisponibles.Take(2))
+                                            {
+                                                <span class="badge bg-info" style="font-size: 0.7rem;">
+                                                    @bebida.Bebida?.Nombre
+                                                </span>
+                                            }
+                                            @if (combo.BebidasDisponibles.Count > 2)
+                                            {
+                                                <span class="badge bg-secondary" style="font-size: 0.7rem;">
+                                                    +@(combo.BebidasDisponibles.Count - 2)
+                                                </span>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-muted">Sin bebidas</small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="h5 mb-0 text-primary">$@combo.Precio.ToString("F2")</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Editar" asp-route-id="@combo.Id"
+                                           class="btn btn-outline-primary"
+                                           title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#eliminarModal@(combo.Id)"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Vista de cards para móvil/tablet - CORREGIDA -->
+            <div class="d-lg-none">
+                @foreach (var combo in Model)
+                {
+                    <div class="card mb-3 shadow-sm border-0">
+                        <div class="card-body p-3">
+                            <!-- Header con imagen y nombre -->
+                            <div class="d-flex align-items-start mb-3">
+                                <img src="@combo.ImagenUrl"
+                                     alt="@combo.Nombre"
+                                     class="img-thumbnail me-3 flex-shrink-0"
+                                     style="width: 100px; height: 100px; object-fit: cover;"
+                                     onerror="this.src='/images/combo-default.jpg'">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h5 class="mb-1">@combo.Nombre</h5>
+                                        <span class="badge bg-success fs-6">
+                                            $@combo.Precio.ToString("F2")
+                                        </span>
+                                    </div>
+                                    <p class="text-muted small mb-2">
+                                        @combo.Descripcion
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Productos incluidos -->
+                            <div class="mb-3">
+                                <h6 class="small text-muted mb-2">
+                                    <i class="fas fa-list-ul me-1"></i>Productos incluidos:
+                                </h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var item in combo.Items.Take(3))
+                                    {
+                                        <span class="badge bg-light text-dark border">
+                                            <small>
+                                                <i class="fas fa-check text-success me-1"></i>
+                                                @item.Cantidad x @item.Producto.Nombre
+                                            </small>
+                                        </span>
+                                    }
+                                    @if (combo.Items.Count > 3)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            +@(combo.Items.Count - 3) más
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Bebidas disponibles -->
+                            @if (combo.BebidasDisponibles?.Any() == true)
+                            {
+                                <div class="mb-3">
+                                    <h6 class="small text-muted mb-2">
+                                        <i class="fas fa-glass-whiskey me-1"></i>Bebidas disponibles:
+                                    </h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var bebida in combo.BebidasDisponibles.Take(3))
+                                        {
+                                            <span class="badge bg-info text-white">
+                                                <small>
+                                                    @bebida.Bebida?.Nombre
+                                                    @if (bebida.RecargoGrande > 0)
+                                                    {
+                                                        <span class="ms-1">(+$@bebida.RecargoGrande)</span>
+                                                    }
+                                                </small>
+                                            </span>
+                                        }
+                                        @if (combo.BebidasDisponibles.Count > 3)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                +@(combo.BebidasDisponibles.Count - 3)
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Acciones -->
+                            <div class="d-flex gap-2 mt-3">
+                                <a asp-action="Editar" asp-route-id="@combo.Id"
+                                   class="btn btn-outline-primary btn-sm flex-fill">
+                                    <i class="fas fa-edit me-1"></i>
+                                    <span class="d-none d-sm-inline">Editar</span>
+                                </a>
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm flex-fill"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#eliminarModal@(combo.Id)">
+                                    <i class="fas fa-trash me-1"></i>
+                                    <span class="d-none d-sm-inline">Eliminar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal de confirmación de eliminación -->
+                    <div class="modal fade" id="eliminarModal@(combo.Id)" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro que desea eliminar el combo <strong>@combo.Nombre</strong>?
+                                    <br><small class="text-muted">Esta acción marcará el combo como no disponible.</small>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <form asp-action="Eliminar" asp-route-id="@combo.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Botón volver al dashboard -->
+<div class="mt-3">
+    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i> Volver al Dashboard
+    </a>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        // Inicializar tooltips de Bootstrap
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Mejorar la experiencia táctil en móvil
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+
+            button.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+}

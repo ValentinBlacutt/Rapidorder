@@ -1,0 +1,255 @@
+﻿@model Restaurante.Models.ViewModels.PedidoViewModel
+@{
+    ViewData["Title"] = "Checkout - Confirmar Pedido";
+}
+<link rel="stylesheet" href="~/css/checkout.css" />
+
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h2>
+            <i class="fas fa-shopping-bag"></i>
+            Finalizar Pedido
+        </h2>
+        <p>Confirma tu pedido</p>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h5>Errores en el formulario:</h5>
+            <ul>
+                @foreach (var key in ViewData.ModelState.Keys)
+                {
+                    foreach (var error in ViewData.ModelState[key].Errors)
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                }
+            </ul>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-7">
+            <form asp-action="Crear" method="post" id="checkout-form">
+                @Html.AntiForgeryToken()
+
+                <div class="form-section">
+                    <h4>
+                        <i class="fas fa-user"></i>
+                        Información Personal
+                    </h4>
+
+                    <div class="mb-3">
+                        <label asp-for="ClienteNombre" class="form-label">
+                            <i class="fas fa-user-circle"></i> Nombre Completo
+                        </label>
+                        <input asp-for="ClienteNombre" class="form-control" placeholder="Ingresa tu nombre completo" required />
+                        <span asp-validation-for="ClienteNombre" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h4>
+                        <i class="fas fa-utensils"></i>
+                        Tipo de Pedido
+                    </h4>
+
+                    <div class="tipo-pedido-options">
+                        <label class="tipo-pedido-option" for="tipo-comer">
+                            <input type="radio" asp-for="TipoPedido" value="@TipoPedido.ParaComerAqui" id="tipo-comer" class="hidden-radio" required />
+                            <i class="fas fa-store tipo-pedido-comer"></i>
+                            <div class="tipo-pedido-nombre">Para Comer Aquí</div>
+                            <div class="tipo-pedido-descripcion">Consume en nuestro local</div>
+                        </label>
+
+                        <label class="tipo-pedido-option" for="tipo-llevar">
+                            <input type="radio" asp-for="TipoPedido" value="@TipoPedido.ParaLlevar" id="tipo-llevar" class="hidden-radio" required />
+                            <i class="fas fa-shopping-bag tipo-pedido-llevar"></i>
+                            <div class="tipo-pedido-nombre">Para Llevar</div>
+                            <div class="tipo-pedido-descripcion">Recoge y llévatelo</div>
+                        </label>
+                    </div>
+                    <span asp-validation-for="TipoPedido" class="text-danger"></span>
+                </div>
+
+                <div class="form-section">
+                    <h4>
+                        <i class="fas fa-credit-card"></i>
+                        Método de Pago
+                    </h4>
+
+                    <div class="tipo-pedido-options">
+                        <label class="tipo-pedido-option" for="pago-online">
+                            <input type="radio" asp-for="MetodoPago" value="@MetodoPago.PagoOnline" id="pago-online" class="hidden-radio" required />
+                            <i class="fas fa-credit-card tipo-pedido-comer"></i>
+                            <div class="tipo-pedido-nombre">Pago Online</div>
+                            <div class="tipo-pedido-descripcion">Paga ahora con tarjeta</div>
+                        </label>
+
+                        <label class="tipo-pedido-option" for="pago-mostrador">
+                            <input type="radio" asp-for="MetodoPago" value="@MetodoPago.PagoEnMostrador" id="pago-mostrador" class="hidden-radio" required />
+                            <i class="fas fa-cash-register tipo-pedido-llevar"></i>
+                            <div class="tipo-pedido-nombre">Pago en Mostrador</div>
+                            <div class="tipo-pedido-descripcion">Paga al recoger tu pedido</div>
+                        </label>
+                    </div>
+                    <span asp-validation-for="MetodoPago" class="text-danger"></span>
+                </div>
+
+                <div class="form-section">
+                    <h4>
+                        <i class="fas fa-sticky-note"></i>
+                        Notas Adicionales
+                    </h4>
+
+                    <div class="mb-3">
+                        <label asp-for="Notas" class="form-label">
+                            <i class="fas fa-edit"></i> Instrucciones Especiales (Opcional)
+                        </label>
+                        <textarea asp-for="Notas" class="form-control" rows="3"
+                                  placeholder="Alergias, preferencias, instrucciones de preparación..."></textarea>
+                        <span asp-validation-for="Notas" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-continuar">
+                    <i class="fas fa-arrow-right"></i> Continuar al Pago
+                </button>
+
+                <a href="@Url.Action("Index", "Carrito")" class="btn btn-volver">
+                    <i class="fas fa-arrow-left"></i> Volver al Carrito
+                </a>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="resumen-pedido">
+                <h4>
+                    <i class="fas fa-receipt"></i>
+                    Resumen del Pedido
+                </h4>
+
+                @if (Model.Carrito?.Items != null && Model.Carrito.Items.Any())
+                {
+                    foreach (var item in Model.Carrito.Items)
+                    {
+                        <div class="item-resumen">
+                            <span class="item-precio">
+                                S/. @item.Subtotal.ToString("0.00")
+                            </span>
+                        </div>
+                    }
+
+                    <div class="total-section">
+                        <div class="total-linea">
+                            <span>Subtotal:</span>
+                            <span>S/. @Model.Carrito.Total.ToString("0.00")</span>
+                        </div>
+                        <div class="total-linea">
+                            <span>Impuestos (18%):</span>
+                            <span>S/. @((Model.Carrito.Total * 0.18m).ToString("0.00"))</span>
+                        </div>
+                        <div class="total-final">
+                            <span>Total a Pagar:</span>
+                            <span>S/. @((Model.Carrito.Total * 1.18m).ToString("0.00"))</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No hay productos en el carrito
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const btnContinuar = document.querySelector('.btn-continuar');
+            const tipoOptions = document.querySelectorAll('.tipo-pedido-option');
+
+            // Selección de tipo de pedido y método de pago
+            tipoOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    const radioName = radio.name;
+
+                    // Remover selección de elementos del mismo grupo
+                    document.querySelectorAll(`input[name="${radioName}"]`).forEach(r => {
+                        r.closest('.tipo-pedido-option').classList.remove('selected');
+                    });
+
+                    // Agregar selección actual
+                    this.classList.add('selected');
+                    radio.checked = true;
+                });
+            });
+
+            // Limpiar errores al escribir
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                    const errorSpan = this.nextElementSibling;
+                    if (errorSpan && errorSpan.classList.contains('text-danger')) {
+                        errorSpan.textContent = '';
+                    }
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredFields = [
+                    { id: 'ClienteNombre', name: 'nombre' }
+                ];
+
+                // Validación básica
+                requiredFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    if (!element.value.trim()) {
+                        element.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                });
+
+                // Validar tipo de pedido
+                const tipoSeleccionado = document.querySelector('input[name="TipoPedido"]:checked');
+                if (!tipoSeleccionado) {
+                    isValid = false;
+                    alert('Por favor selecciona si es para comer aquí o para llevar');
+                }
+
+                // Validar método de pago
+                const metodoPagoSeleccionado = document.querySelector('input[name="MetodoPago"]:checked');
+                if (!metodoPagoSeleccionado) {
+                    isValid = false;
+                    alert('Por favor selecciona un método de pago');
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor completa todos los campos requeridos');
+                    return false;
+                }
+
+                // Mostrar loading
+                btnContinuar.disabled = true;
+                btnContinuar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            });
+        });
+    </script>
+}

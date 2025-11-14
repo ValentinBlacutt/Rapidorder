@@ -1,0 +1,358 @@
+﻿<!-- Views/Personalizacion/PersonalizarHamburguesa.cshtml -->
+@model Restaurante.Models.ViewModels.PersonalizarHamburguesaViewModel
+@{
+    ViewData["Title"] = "Personalizar Hamburguesa";
+}
+
+<link rel="stylesheet" href="~/css/PersonalizarHamburguesa.css" />
+
+<div class="personalizar-container fade-in-up">
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="main-card">
+                <div class="personalizar-header">
+                    <h4>🍔 Personalizar: @Model.Hamburguesa.Nombre</h4>
+                    <small style="opacity: 0.9;">Crea tu hamburguesa perfecta a tu gusto</small>
+                </div>
+                <div class="main-card-body">
+                    <form method="post" asp-action="ProcesarPersonalizacionHamburguesa" id="formPersonalizar">
+                        <input type="hidden" asp-for="HamburguesaId" />
+                        <input type="hidden" name="ingredientesExtra" id="ingredientesExtraHidden" value="" />
+                        <input type="hidden" name="notasAdicionales" id="notasAdicionalesHidden" value="@Model.NotasAdicionales" />
+
+                        <!-- INGREDIENTES OBLIGATORIOS -->
+                        <div class="ingredientes-section">
+                            <div class="section-title text-success">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Ingredientes Obligatorios</span>
+                            </div>
+                            <p class="section-description">
+                                Estos ingredientes son esenciales y siempre vienen en tu hamburguesa
+                            </p>
+                            <div class="row">
+                                @if (Model.IngredientesObligatorios != null && Model.IngredientesObligatorios.Any())
+                                {
+                                    @foreach (var ingrediente in Model.IngredientesObligatorios)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="ingrediente-card included obligatorio">
+                                                <div class="card-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" checked disabled>
+                                                        <label class="form-check-label">
+                                                            <span>@ingrediente.Nombre</span>
+                                                            <span class="ingrediente-badge bg-danger text-white">
+                                                                <i class="fas fa-lock"></i> Obligatorio
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <!-- INGREDIENTES OPCIONALES (Base no obligatorios) -->
+                        @if (Model.IngredientesOpcionalesBase != null && Model.IngredientesOpcionalesBase.Any())
+                        {
+                            <div class="ingredientes-section">
+                                <div class="section-title text-info">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Ingredientes Opcionales Incluidos</span>
+                                </div>
+                                <p class="section-description">
+                                    Estos ingredientes vienen incluidos pero puedes quitarlos si lo deseas
+                                </p>
+                                <div class="row">
+                                    @foreach (var ingrediente in Model.IngredientesOpcionalesBase)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="ingrediente-card opcional" data-opcional-card="@ingrediente.Id">
+                                                <div class="card-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input ingrediente-opcional"
+                                                               type="checkbox"
+                                                               value="@ingrediente.Id"
+                                                               id="opcional_@ingrediente.Id"
+                                                               data-nombre="@ingrediente.Nombre"
+                                                               checked>
+                                                        <label class="form-check-label" for="opcional_@ingrediente.Id">
+                                                            <span>@ingrediente.Nombre</span>
+                                                            <span class="ingrediente-badge bg-info text-white">Incluido</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- INGREDIENTES EXTRA -->
+                        <div class="ingredientes-section">
+                            <div class="section-title text-warning">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Ingredientes Extra</span>
+                            </div>
+                            <p class="section-description">
+                                Personaliza tu hamburguesa agregando estos deliciosos ingredientes
+                            </p>
+                            <div class="row">
+                                @if (Model.IngredientesDisponibles != null && Model.IngredientesDisponibles.Any())
+                                {
+                                    @foreach (var ingrediente in Model.IngredientesDisponibles)
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="ingrediente-card extra" data-extra-card="@ingrediente.Id">
+                                                <div class="card-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input ingrediente-extra"
+                                                               type="checkbox"
+                                                               value="@ingrediente.Id"
+                                                               id="ingrediente_@ingrediente.Id"
+                                                               data-precio="@ingrediente.PrecioAdicional"
+                                                               data-nombre="@ingrediente.Nombre">
+                                                        <label class="form-check-label" for="ingrediente_@ingrediente.Id">
+                                                            <span>@ingrediente.Nombre</span>
+                                                            @if (ingrediente.PrecioAdicional > 0)
+                                                            {
+                                                                <span class="ingrediente-badge bg-warning text-dark">
+                                                                    +S/. @ingrediente.PrecioAdicional.ToString("0.00")
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="ingrediente-badge bg-secondary text-white">Gratis</span>
+                                                            }
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-12">
+                                        <div class="alert alert-info alert-custom">
+                                            <i class="fas fa-info-circle"></i> No hay ingredientes extra disponibles para esta hamburguesa.
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- NOTAS ESPECIALES -->
+                        <div class="notas-section">
+                            <div class="section-title" style="color: #667eea; margin-bottom: 15px;">
+                                <i class="fas fa-edit"></i>
+                                <span>Notas Especiales</span>
+                            </div>
+                            <textarea asp-for="NotasAdicionales" class="form-control" rows="4"
+                                      placeholder="¿Alguna preferencia especial? Ej: Bien cocida, sin picante, extra salsa..."></textarea>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-agregar-carrito">
+                                <i class="fas fa-shopping-cart"></i> Agregar al Carrito ·
+                                <span id="precioTotal">S/. @Model.Hamburguesa.Precio.ToString("0.00")</span>
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-volver">
+                                <i class="fas fa-arrow-left"></i> Volver al Menú
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DEL PEDIDO -->
+        <div class="col-lg-4">
+            <div class="resumen-card">
+                <div class="resumen-header">
+                    <h5><i class="fas fa-receipt"></i> Resumen de tu Pedido</h5>
+                </div>
+                <div class="resumen-body">
+                    <div class="resumen-producto">
+                        <h6>@Model.Hamburguesa.Nombre</h6>
+                        <p class="text-muted small mb-0">@Model.Hamburguesa.Descripcion</p>
+                    </div>
+
+                    <!-- INGREDIENTES INCLUIDOS -->
+                    <div class="mb-3">
+                        <strong class="text-success d-flex align-items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Incluye:
+                        </strong>
+                        <ul class="lista-incluye" id="listaIncluye">
+                            @if (Model.IngredientesObligatorios != null && Model.IngredientesObligatorios.Any())
+                            {
+                                @foreach (var ingrediente in Model.IngredientesObligatorios)
+                                {
+                                    <li data-obligatorio="true">@ingrediente.Nombre <span class="badge bg-danger" style="font-size: 0.65rem;">Obligatorio</span></li>
+                                }
+                            }
+                            @if (Model.IngredientesOpcionalesBase != null && Model.IngredientesOpcionalesBase.Any())
+                            {
+                                @foreach (var ingrediente in Model.IngredientesOpcionalesBase)
+                                {
+                                    <li data-opcional="@ingrediente.Id">@ingrediente.Nombre</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+
+                    <hr style="border-color: #e2e8f0;">
+
+                    <!-- EXTRAS SELECCIONADOS -->
+                    <div class="mb-3">
+                        <strong class="text-warning d-flex align-items-center gap-2">
+                            <i class="fas fa-plus-circle"></i> Extras:
+                        </strong>
+                        <div id="listaExtras" class="mt-2">
+                            <small class="text-muted">Ningún extra seleccionado</small>
+                        </div>
+                    </div>
+
+                    <!-- DESGLOSE DE PRECIO -->
+                    <div class="precio-desglose">
+                        <div class="precio-row">
+                            <span>Precio base:</span>
+                            <span id="precioBaseDisplay">S/. @Model.Hamburguesa.Precio.ToString("0.00")</span>
+                        </div>
+                        <div class="precio-row">
+                            <span>Extras:</span>
+                            <span id="precioExtras" class="text-warning">S/. 0.00</span>
+                        </div>
+                        <div class="precio-row precio-total">
+                            <span>Total:</span>
+                            <span id="precioResumen" class="amount">S/. @Model.Hamburguesa.Precio.ToString("0.00")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const precioBase = parseFloat(@Model.Hamburguesa.Precio);
+            const checkboxesExtras = document.querySelectorAll('.ingrediente-extra');
+            const checkboxesOpcionales = document.querySelectorAll('.ingrediente-opcional');
+
+            // Evento para ingredientes EXTRA
+            checkboxesExtras.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const card = document.querySelector(`[data-extra-card="${this.value}"]`);
+                    if (this.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                    actualizarPrecioYResumen();
+                });
+            });
+
+            // Evento para ingredientes OPCIONALES (base no obligatorios)
+            checkboxesOpcionales.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const card = document.querySelector(`[data-opcional-card="${this.value}"]`);
+                    if (this.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                    actualizarResumenOpcionales();
+                });
+            });
+
+            // Actualizar notas cuando cambie el textarea
+            document.querySelector('[name="NotasAdicionales"]').addEventListener('input', function() {
+                document.getElementById('notasAdicionalesHidden').value = this.value;
+            });
+
+            function actualizarResumenOpcionales() {
+                // Actualizar la lista de incluidos en el resumen
+                const listaIncluye = document.getElementById('listaIncluye');
+                const itemsOpcionales = listaIncluye.querySelectorAll('[data-opcional]');
+
+                checkboxesOpcionales.forEach(function(checkbox) {
+                    const item = listaIncluye.querySelector(`[data-opcional="${checkbox.value}"]`);
+                    if (item) {
+                        if (checkbox.checked) {
+                            item.style.display = 'list-item';
+                            item.style.textDecoration = 'none';
+                        } else {
+                            item.style.display = 'list-item';
+                            item.style.textDecoration = 'line-through';
+                            item.style.opacity = '0.5';
+                        }
+                    }
+                });
+            }
+
+            function actualizarPrecioYResumen() {
+                let precioExtras = 0;
+                let extras = [];
+                let ingredientesExtraIds = [];
+
+                // Recorrer todos los checkboxes de extras marcados
+                checkboxesExtras.forEach(function(checkbox) {
+                    if (checkbox.checked) {
+                        const precioExtra = parseFloat(checkbox.getAttribute('data-precio')) || 0;
+                        const nombreIngrediente = checkbox.getAttribute('data-nombre');
+                        const ingredienteId = checkbox.value;
+
+                        precioExtras += precioExtra;
+                        extras.push({
+                            nombre: nombreIngrediente,
+                            precio: precioExtra
+                        });
+                        ingredientesExtraIds.push(ingredienteId);
+                    }
+                });
+
+                const precioTotal = precioBase + precioExtras;
+
+                // Actualizar campos hidden del formulario
+                document.getElementById('ingredientesExtraHidden').value = ingredientesExtraIds.join(',');
+
+                // Actualizar precios en la interfaz
+                document.getElementById('precioTotal').textContent = 'S/. ' + precioTotal.toFixed(2);
+                document.getElementById('precioResumen').textContent = 'S/. ' + precioTotal.toFixed(2);
+                document.getElementById('precioExtras').textContent = 'S/. ' + precioExtras.toFixed(2);
+
+                // Actualizar resumen de extras
+                let htmlExtras = '';
+                if (extras.length > 0) {
+                    htmlExtras = '<div class="mt-2" style="background: #fff9e6; padding: 12px; border-radius: 8px;">';
+                    extras.forEach(function(extra) {
+                        htmlExtras += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                        htmlExtras += '<small style="font-weight: 500;">' + extra.nombre + '</small>';
+                        if (extra.precio > 0) {
+                            htmlExtras += '<small class="text-warning fw-bold">+S/. ' + extra.precio.toFixed(2) + '</small>';
+                        } else {
+                            htmlExtras += '<small class="text-muted">Gratis</small>';
+                        }
+                        htmlExtras += '</div>';
+                    });
+                    htmlExtras += '</div>';
+                } else {
+                    htmlExtras = '<small class="text-muted">Ningún extra seleccionado</small>';
+                }
+
+                document.getElementById('listaExtras').innerHTML = htmlExtras;
+            }
+
+            // Ejecutar una vez al cargar para inicializar
+            actualizarPrecioYResumen();
+            actualizarResumenOpcionales();
+        });
+    </script>
+}

@@ -1,0 +1,397 @@
+﻿@model Restaurante.Models.ViewModels.CrearEditarComboViewModel
+
+@{
+    ViewData["Title"] = "Editar Combo";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link rel="stylesheet" href="~/css/altaCombos.css" />
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="mb-0"><i class="bi bi-pencil"></i> @ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Editar" method="post" enctype="multipart/form-data" id="form-editar-combo">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Información Básica -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Nombre" class="form-label">Nombre del Combo *</label>
+                                <input asp-for="Nombre" class="form-control" required>
+                                <span asp-validation-for="Nombre" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Precio" class="form-label">Precio ($) *</label>
+                                <input asp-for="Precio" type="number" step="0.01" class="form-control" required>
+                                <span asp-validation-for="Precio" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Descripcion" class="form-label">Descripción</label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="Disponible" class="form-check-input" type="checkbox">
+                                <label asp-for="Disponible" class="form-check-label">
+                                    Disponible para venta
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Imagen Actual -->
+                        <div class="mb-4">
+                            <label class="form-label">Imagen Actual</label>
+                            <div class="mb-2">
+                                <img src="@Model.ImagenUrl" alt="@Model.Nombre" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                            <label for="imagen" class="form-label">Cambiar Imagen</label>
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                            <small class="text-muted">Deja vacío para mantener la imagen actual. Formatos: JPG, PNG, WEBP.</small>
+                        </div>
+
+                        <!-- BEBIDAS DISPONIBLES -->
+                        <h4 class="mb-3 mt-4"><i class="bi bi-cup-straw"></i> Bebidas Disponibles en el Combo</h4>
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">🥤 Selecciona las bebidas que estarán disponibles</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">
+                                    Los clientes podrán elegir entre estas bebidas al personalizar el combo.
+                                </p>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Seleccionar</th>
+                                                <th>Bebida</th>
+                                                <th>Recargo Pequeño ($)</th>
+                                                <th>Recargo Mediano ($)</th>
+                                                <th>Recargo Grande ($)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int i = 0; i < Model.BebidasDisponibles.Count; i++)
+                                            {
+                                                var bebidaVm = Model.BebidasDisponibles[i];
+                                                <tr>
+                                                    <td>
+                                                        <input type="hidden" asp-for="BebidasDisponibles[i].BebidaId" />
+                                                        <input type="hidden" asp-for="BebidasDisponibles[i].Nombre" />
+                                                        <div class="form-check">
+                                                            <input asp-for="BebidasDisponibles[i].Seleccionada" class="form-check-input bebida-checkbox" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <strong>@bebidaVm.Nombre</strong>
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="BebidasDisponibles[i].RecargoPequeno"
+                                                               type="number"
+                                                               step="0.01"
+                                                               class="form-control form-control-sm recargo-input"
+                                                               placeholder="0.00" />
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="BebidasDisponibles[i].RecargoMediano"
+                                                               type="number"
+                                                               step="0.01"
+                                                               class="form-control form-control-sm recargo-input"
+                                                               placeholder="0.00" />
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="BebidasDisponibles[i].RecargoGrande"
+                                                               type="number"
+                                                               step="0.01"
+                                                               class="form-control form-control-sm recargo-input"
+                                                               placeholder="0.00" />
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PRODUCTOS DEL COMBO - VERSIÓN SIMPLIFICADA SIN CANTIDADES -->
+                        <h4 class="mb-3 mt-4"><i class="bi bi-basket"></i> Productos del Combo</h4>
+                        <p class="text-muted">Marca los productos que incluirá el combo (1 unidad de cada uno seleccionado).</p>
+
+                        <div id="productos-container">
+                            @{
+                                int globalIndex = 0;
+                            }
+
+                            <!-- Hamburguesas -->
+                            @if (Model.HamburguesasDisponibles != null && Model.HamburguesasDisponibles.Any())
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">🍔 Hamburguesas</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @foreach (var hamburguesa in Model.HamburguesasDisponibles)
+                                            {
+                                                var itemExistente = Model.ProductosDelCombo?.FirstOrDefault(p => p.ProductoId == hamburguesa.Id);
+                                                var estaSeleccionado = (itemExistente?.Cantidad ?? 0) > 0;
+
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card border @(estaSeleccionado ? "border-success" : "")">
+                                                        <div class="card-body">
+                                                            <div class="form-check">
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].ProductoId" value="@hamburguesa.Id" />
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].Nombre" value="@hamburguesa.Nombre" />
+
+                                                                <input type="checkbox"
+                                                                       class="form-check-input producto-checkbox"
+                                                                       id="producto_@globalIndex"
+                                                                       data-index="@globalIndex"
+                                                                       @(estaSeleccionado ? "checked" : "")>
+                                                                <input type="hidden"
+                                                                       name="ProductosDelCombo[@globalIndex].Cantidad"
+                                                                       class="cantidad-hidden"
+                                                                       data-index="@globalIndex"
+                                                                       value="@(estaSeleccionado ? "1" : "0")">
+
+                                                                <label class="form-check-label" for="producto_@globalIndex">
+                                                                    <strong>@hamburguesa.Nombre</strong><br>
+                                                                    <small class="text-muted">$@hamburguesa.Precio.ToString("F2")</small>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                globalIndex++;
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Papas -->
+                            @if (Model.PapasDisponibles != null && Model.PapasDisponibles.Any())
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">🍟 Papas</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @foreach (var papa in Model.PapasDisponibles)
+                                            {
+                                                var itemExistente = Model.ProductosDelCombo?.FirstOrDefault(p => p.ProductoId == papa.Id);
+                                                var estaSeleccionado = (itemExistente?.Cantidad ?? 0) > 0;
+
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card border @(estaSeleccionado ? "border-success" : "")">
+                                                        <div class="card-body">
+                                                            <div class="form-check">
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].ProductoId" value="@papa.Id" />
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].Nombre" value="@papa.Nombre" />
+
+                                                                <input type="checkbox"
+                                                                       class="form-check-input producto-checkbox"
+                                                                       id="producto_@globalIndex"
+                                                                       data-index="@globalIndex"
+                                                                       @(estaSeleccionado ? "checked" : "")>
+                                                                <input type="hidden"
+                                                                       name="ProductosDelCombo[@globalIndex].Cantidad"
+                                                                       class="cantidad-hidden"
+                                                                       data-index="@globalIndex"
+                                                                       value="@(estaSeleccionado ? "1" : "0")">
+
+                                                                <label class="form-check-label" for="producto_@globalIndex">
+                                                                    <strong>@papa.Nombre</strong><br>
+                                                                    <small class="text-muted">$@papa.Precio.ToString("F2")</small>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                globalIndex++;
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Bebidas Fijas -->
+                            @if (Model.TodasLasBebidas != null && Model.TodasLasBebidas.Any())
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">🥤 Bebida Incluida (Fija)</h5>
+                                        <small class="text-muted">Selecciona UNA bebida que vendrá incluida por defecto</small>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @foreach (var bebida in Model.TodasLasBebidas)
+                                            {
+                                                var itemExistente = Model.ProductosDelCombo?.FirstOrDefault(p => p.ProductoId == bebida.Id);
+                                                var estaSeleccionado = (itemExistente?.Cantidad ?? 0) > 0;
+
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="card border @(estaSeleccionado ? "border-warning" : "")">
+                                                        <div class="card-body">
+                                                            <div class="form-check">
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].ProductoId" value="@bebida.Id" />
+                                                                <input type="hidden" name="ProductosDelCombo[@globalIndex].Nombre" value="@bebida.Nombre" />
+
+                                                                <input type="radio"
+                                                                       name="bebidaFijaSeleccionada"
+                                                                       class="form-check-input bebida-fija-radio"
+                                                                       id="bebidaFija_@globalIndex"
+                                                                       data-index="@globalIndex"
+                                                                       value="@bebida.Id"
+                                                                       @(estaSeleccionado ? "checked" : "")>
+                                                                <input type="hidden"
+                                                                       name="ProductosDelCombo[@globalIndex].Cantidad"
+                                                                       class="cantidad-bebida-fija"
+                                                                       data-index="@globalIndex"
+                                                                       value="@(estaSeleccionado ? "1" : "0")">
+
+                                                                <label class="form-check-label" for="bebidaFija_@globalIndex">
+                                                                    <strong>@bebida.Nombre</strong><br>
+                                                                    <small class="text-muted">$@bebida.Precio.ToString("F2")</small>
+                                                                    @if (estaSeleccionado)
+                                                                    {
+                                                                        <span class="badge bg-warning text-dark ms-2">✅ Seleccionada</span>
+                                                                    }
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                globalIndex++;
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Resumen del Combo -->
+                        <div class="card bg-light mt-4">
+                            <div class="card-body">
+                                <h5><i class="bi bi-info-circle"></i> Información Importante</h5>
+                                <ul class="mb-0">
+                                    <li>Cada producto seleccionado se incluirá en cantidad de 1 unidad</li>
+                                    <li>Solo puedes seleccionar UNA bebida fija incluida en el combo</li>
+                                    <li>Las bebidas disponibles son opciones que los clientes podrán elegir con recargos</li>
+                                    <li>Los recargos deben usar punto (.) como separador decimal (ej: 0.50)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Manejo de checkboxes de productos (hamburguesas y papas)
+        document.querySelectorAll('.producto-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const index = this.dataset.index;
+                const cantidadInput = document.querySelector(`.cantidad-hidden[data-index="${index}"]`);
+                const card = this.closest('.card');
+
+                if (this.checked) {
+                    cantidadInput.value = "1";
+                    card.classList.add('border-success');
+                } else {
+                    cantidadInput.value = "0";
+                    card.classList.remove('border-success');
+                }
+            });
+        });
+
+        // Manejo de radio buttons para bebidas fijas (solo una seleccionada)
+        document.querySelectorAll('.bebida-fija-radio').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Resetear todas las cantidades de bebidas fijas
+                document.querySelectorAll('.cantidad-bebida-fija').forEach(input => {
+                    input.value = "0";
+                    const card = input.closest('.card');
+                    card.classList.remove('border-warning');
+                    const badge = card.querySelector('.badge');
+                    if (badge) badge.remove();
+                });
+
+                // Activar la seleccionada
+                if (this.checked) {
+                    const index = this.dataset.index;
+                    const cantidadInput = document.querySelector(`.cantidad-bebida-fija[data-index="${index}"]`);
+                    cantidadInput.value = "1";
+
+                    const card = this.closest('.card');
+                    card.classList.add('border-warning');
+
+                    const label = card.querySelector('label');
+                    if (!label.querySelector('.badge')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'badge bg-warning text-dark ms-2';
+                        badge.textContent = '✅ Seleccionada';
+                        label.appendChild(badge);
+                    }
+                }
+            });
+        });
+
+        // Validar que los recargos usen punto decimal
+        document.querySelectorAll('.recargo-input').forEach(input => {
+            input.addEventListener('input', function() {
+                // Reemplazar coma por punto automáticamente
+                this.value = this.value.replace(',', '.');
+            });
+        });
+
+        // Debug: Mostrar datos del form antes de enviar
+        document.getElementById('form-editar-combo').addEventListener('submit', function(e) {
+            console.log('=== ENVIANDO FORMULARIO DE EDICIÓN ===');
+            const formData = new FormData(this);
+
+            let hasProducts = false;
+            for (let [key, value] of formData.entries()) {
+                if (key.includes('ProductosDelCombo') && key.includes('Cantidad') && parseInt(value) > 0) {
+                    console.log(`📦 ${key}: ${value}`);
+                    hasProducts = true;
+                }
+            }
+
+            if (!hasProducts) {
+                console.log('⚠️ No hay productos seleccionados en el formulario');
+            }
+
+            console.log('=== FIN DEL FORMULARIO ===');
+        });
+    </script>
+}

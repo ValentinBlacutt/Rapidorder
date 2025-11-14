@@ -1,0 +1,341 @@
+﻿<!-- Views/PersonalizacionPapas/PersonalizarPapas.cshtml -->
+@model Restaurante.Models.ViewModels.PersonalizarPapasViewModel
+@{
+    ViewData["Title"] = "Personalizar Papas";
+}
+
+<link rel="stylesheet" href="~/css/PersonalizarPapas.css" />
+
+
+
+<div class="personalizar-container fade-in-up">
+    <div class="row">
+        <!-- Formulario Principal -->
+        <div class="col-lg-8">
+            <div class="main-card">
+                <div class="papas-header">
+                    <h4><i class="fas fa-french-fries"></i> Personalizar: @Model.Papas.Nombre</h4>
+                    <small style="opacity: 0.9;">Crea tus papas perfectas con tus ingredientes favoritos</small>
+                </div>
+                <div class="main-card-body">
+                    <form method="post" asp-action="ProcesarPersonalizacionPapas">
+                        <input type="hidden" asp-for="PapasId" />
+                        <input type="hidden" name="tamanioSeleccionado" id="tamanioSeleccionadoHidden" value="@Model.TamanioSeleccionado" />
+                        <input type="hidden" name="conSal" id="conSalHidden" value="@Model.ConSal.ToString().ToLower()" />
+                        <input type="hidden" name="tipoSalsaSeleccionada" id="tipoSalsaSeleccionadaHidden" value="@Model.TipoSalsaSeleccionada" />
+                        <input type="hidden" name="notasAdicionales" id="notasAdicionalesHidden" value="@Model.NotasAdicionales" />
+
+                        <!-- INFORMACIÓN DE LAS PAPAS -->
+                        <div class="papas-image-container">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <img src="@(Model.Papas.ImagenUrl ?? "/images/papas-placeholder.jpg")"
+                                         class="papas-image"
+                                         alt="@Model.Papas.Nombre">
+                                </div>
+                                <div class="col-md-7 papas-info">
+                                    <h5>@Model.Papas.Nombre</h5>
+                                    <p style="color: #4a5568;">@Model.Papas.Descripcion</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SELECCIÓN DE TAMAÑO -->
+                        <div class="tamanios-section">
+                            <div class="section-title text-success">
+                                <i class="fas fa-arrows-alt-v"></i>
+                                <span>Selecciona el Tamaño</span>
+                            </div>
+                            <p class="section-description">
+                                Elige la porción perfecta para tu apetito
+                            </p>
+
+                            <div class="row g-4 mb-4">
+                                @foreach (var tamanio in Model.TamaniosDisponibles)
+                                {
+                                    var isChecked = Model.TamanioSeleccionado == tamanio.Key;
+                                    var inputId = $"tamanio_{(int)tamanio.Key}";
+                                    var partes = tamanio.Value.Split(" - ");
+                                    var nombreTamanio = partes[0];
+                                    var precio = partes.Length > 1 ? partes[1] : "";
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="tamanio-papas-card @(isChecked ? "selected" : "")"
+                                             data-tamanio="@tamanio.Key">
+                                            <div class="card-body text-center">
+                                                <div class="form-check d-flex justify-content-center mb-3">
+                                                    <input class="form-check-input"
+                                                           type="radio"
+                                                           name="TamanioSeleccionado"
+                                                           value="@tamanio.Key"
+                                                           id="@inputId"
+                                                           @(isChecked ? "checked" : "")>
+                                                </div>
+
+                                                <div class="tamanio-icon-papas">
+                                                    @if (tamanio.Key == Tamanio.Pequeno)
+                                                    {
+                                                        <i class="fas fa-utensil-spoon"></i>
+                                                    }
+                                                    else if (tamanio.Key == Tamanio.Mediano)
+                                                    {
+                                                        <i class="fas fa-utensils"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fas fa-drumstick-bite"></i>
+                                                    }
+                                                </div>
+
+                                                <div class="tamanio-label-papas">@nombreTamanio</div>
+                                                <div class="tamanio-precio-papas">@precio</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- SELECCIÓN DE SAL -->
+                        <div class="ingredientes-section">
+                            <div class="section-title text-warning">
+                                <i class="fas fa-mortar-pestle"></i>
+                                <span>¿Cómo quieres la sal?</span>
+                            </div>
+                            <p class="section-description">
+                                Elige si prefieres tus papas con o sin sal
+                            </p>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <div class="sal-card con-sal @(Model.ConSal ? "selected" : "")"
+                                         data-sal="true">
+                                        <div class="text-center">
+                                            <div class="form-check d-flex justify-content-center mb-3">
+                                                <input class="form-check-input" type="radio" name="ConSal" value="true"
+                                                       id="conSal" @(Model.ConSal ? "checked" : "")>
+                                            </div>
+                                            <div class="sal-icon">
+                                                <i class="fas fa-check-circle"></i>
+                                            </div>
+                                            <div class="sal-label">Con Sal</div>
+                                            <small class="text-muted">Sabor tradicional y delicioso</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="sal-card sin-sal @(!Model.ConSal ? "selected" : "")"
+                                         data-sal="false">
+                                        <div class="text-center">
+                                            <div class="form-check d-flex justify-content-center mb-3">
+                                                <input class="form-check-input" type="radio" name="ConSal" value="false"
+                                                       id="sinSal" @(!Model.ConSal ? "checked" : "")>
+                                            </div>
+                                            <div class="sal-icon">
+                                                <i class="fas fa-times-circle"></i>
+                                            </div>
+                                            <div class="sal-label">Sin Sal</div>
+                                            <small class="text-muted">Opción más saludable</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SELECCIÓN DE SALSA -->
+                        <div class="salsa-section">
+                            <h5>
+                                <i class="fas fa-fill-drip"></i>
+                                Elige tu Salsa Favorita
+                            </h5>
+                            <select class="form-select salsa-select" name="TipoSalsa" id="tipoSalsaSelect">
+                                @foreach (var salsa in Model.SalsasDisponibles)
+                                {
+                                    <option value="@salsa" selected="@(salsa == Model.TipoSalsaSeleccionada)">🥫 @salsa</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- NOTAS ESPECIALES -->
+                        <div class="notas-section">
+                            <div class="section-title" style="color: #2ed573; margin-bottom: 15px;">
+                                <i class="fas fa-edit"></i>
+                                <span>Notas Especiales</span>
+                            </div>
+                            <textarea asp-for="NotasAdicionales" class="form-control" rows="4"
+                                      placeholder="¿Alguna preferencia especial? Ej: Extra crujientes, bien doradas, poca sal..."></textarea>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN -->
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-agregar-papas">
+                                <i class="fas fa-shopping-cart"></i> Agregar al Carrito ·
+                                <span id="precioTotal">S/. @Model.PrecioFinal.ToString("0.00")</span>
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-volver">
+                                <i class="fas fa-arrow-left"></i> Volver al Menú
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN DEL PEDIDO -->
+        <div class="col-lg-4">
+            <div class="resumen-card">
+                <div class="resumen-header">
+                    <h5><i class="fas fa-receipt"></i> Resumen de tu Pedido</h5>
+                </div>
+                <div class="resumen-body">
+                    <div class="resumen-papas">
+                        <h6 style="color: #2ed573; font-weight: 700; margin-bottom: 8px;">
+                            @Model.Papas.Nombre
+                        </h6>
+                        <p class="text-muted small mb-0">@Model.Papas.Descripcion</p>
+                    </div>
+
+                    <!-- DETALLES DE LA SELECCIÓN -->
+                    <div class="mb-3">
+                        <div class="resumen-item-papas">
+                            <i class="fas fa-arrows-alt-v"></i>
+                            <strong>Tamaño:</strong>
+                            <div id="resumenTamanio">
+                                <span class="badge badge-papas bg-success">@Model.TamanioSeleccionado</span>
+                            </div>
+                        </div>
+
+                        <div class="resumen-item-papas">
+                            <i class="fas fa-mortar-pestle"></i>
+                            <strong>Sal:</strong>
+                            <div id="resumenSal">
+                                <span class="badge badge-papas @(Model.ConSal ? "bg-success" : "bg-danger")">
+                                    @(Model.ConSal ? "Con Sal" : "Sin Sal")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="resumen-item-papas">
+                            <i class="fas fa-fill-drip"></i>
+                            <strong>Salsa:</strong>
+                            <div id="resumenSalsa">
+                                <span class="badge badge-papas bg-info">@Model.TipoSalsaSeleccionada</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: #e2e8f0;">
+
+                    <!-- PRECIO TOTAL -->
+                    <div class="precio-desglose">
+                        <div class="precio-row precio-total">
+                            <span>Total:</span>
+                            <span id="precioResumen" class="amount" style="background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                S/. @Model.PrecioFinal.ToString("0.00")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Precios por tamaño
+        const precios = @Html.Raw(Model.PreciosJson);
+
+        function seleccionarTamanio(tamanioElement) {
+            const tamanio = tamanioElement.getAttribute('data-tamanio');
+            const radio = document.querySelector(`input[value="${tamanio}"]`);
+
+            if (radio) {
+                radio.checked = true;
+                document.querySelectorAll('.tamanio-papas-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                tamanioElement.classList.add('selected');
+                actualizarPrecioYResumen();
+            }
+        }
+
+        function seleccionarSal(conSal) {
+            document.getElementById(conSal ? 'conSal' : 'sinSal').checked = true;
+            document.querySelectorAll('.sal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-sal="${conSal}"]`).classList.add('selected');
+            document.getElementById('conSalHidden').value = conSal.toString().toLowerCase();
+            document.getElementById('resumenSal').innerHTML =
+                `<span class="badge badge-papas ${conSal ? 'bg-success' : 'bg-danger'}">${conSal ? 'Con Sal' : 'Sin Sal'}</span>`;
+        }
+
+        function actualizarPrecioYResumen() {
+            const radioSeleccionado = document.querySelector('input[name="TamanioSeleccionado"]:checked');
+            if (!radioSeleccionado) return;
+
+            const tamanioSeleccionado = radioSeleccionado.value;
+            const precio = precios[tamanioSeleccionado];
+
+            document.getElementById('tamanioSeleccionadoHidden').value = tamanioSeleccionado;
+            document.getElementById('tipoSalsaSeleccionadaHidden').value = document.getElementById('tipoSalsaSelect').value;
+
+            document.getElementById('precioTotal').textContent = 'S/. ' + precio.toFixed(2);
+            document.getElementById('precioResumen').textContent = 'S/. ' + precio.toFixed(2);
+            document.getElementById('resumenTamanio').innerHTML = `<span class="badge badge-papas bg-success">${tamanioSeleccionado}</span>`;
+            document.getElementById('resumenSalsa').innerHTML = `<span class="badge badge-papas bg-info">${document.getElementById('tipoSalsaSelect').value}</span>`;
+        }
+
+        document.getElementById('tipoSalsaSelect').addEventListener('change', function() {
+            document.getElementById('tipoSalsaSeleccionadaHidden').value = this.value;
+            document.getElementById('resumenSalsa').innerHTML = `<span class="badge badge-papas bg-info">${this.value}</span>`;
+        });
+
+        document.querySelector('[name="NotasAdicionales"]').addEventListener('input', function() {
+            document.getElementById('notasAdicionalesHidden').value = this.value;
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Eventos click en tarjetas de tamaño
+            document.querySelectorAll('.tamanio-papas-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    seleccionarTamanio(this);
+                });
+            });
+
+            // Eventos click en tarjetas de sal
+            document.querySelectorAll('.sal-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const conSal = this.getAttribute('data-sal') === 'true';
+                    seleccionarSal(conSal);
+                });
+            });
+
+            // Eventos change en radios de tamaño
+            document.querySelectorAll('input[name="TamanioSeleccionado"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const card = document.querySelector(`[data-tamanio="${this.value}"]`);
+                    if (card) {
+                        document.querySelectorAll('.tamanio-papas-card').forEach(c => {
+                            c.classList.remove('selected');
+                        });
+                        card.classList.add('selected');
+                    }
+                    actualizarPrecioYResumen();
+                });
+            });
+
+            // Inicializar estilos
+            const radioInicial = document.querySelector('input[name="TamanioSeleccionado"]:checked');
+            if (radioInicial) {
+                const cardInicial = document.querySelector(`[data-tamanio="${radioInicial.value}"]`);
+                if (cardInicial) {
+                    cardInicial.classList.add('selected');
+                }
+            }
+
+            actualizarPrecioYResumen();
+        });
+    </script>
+}
