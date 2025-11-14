@@ -1,0 +1,464 @@
+﻿/* Combo personalización */
+.combo-header {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    padding: 30px;
+    border-radius: 20px 20px 0 0;
+    color: white;
+    margin-bottom: 0;
+}
+
+    .combo-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+/* Info del combo */
+.combo-info-section {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 35px;
+}
+
+    .combo-info-section h5 {
+        color: #2ed573;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+.combo-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+    .combo-items-list li {
+        padding: 8px 0;
+        padding-left: 30px;
+        position: relative;
+        font-size: 1rem;
+        color: #2d3748;
+        font-weight: 500;
+    }
+
+        .combo-items-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2ed573;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+/* Precio resumen flotante */
+.precio-flotante {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(46, 213, 115, 0.2);
+    border: 3px solid #2ed573;
+}
+
+    .precio-flotante h5 {
+        color: #2d3748;
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+.precio-display {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.precio-detalle {
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+/* Tarjetas de productos */
+.producto-combo-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+    .producto-combo-card:hover {
+        box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+        transform: translateY(-3px);
+    }
+
+.producto-header {
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    padding: 20px;
+    border-bottom: 3px solid #e2e8f0;
+}
+
+    .producto-header h6 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #2d3748;
+    }
+
+    .producto-header i {
+        font-size: 1.3rem;
+        margin-right: 8px;
+    }
+
+    .producto-header.hamburguesa {
+        border-bottom-color: #ffd93d;
+    }
+
+    .producto-header.bebida {
+        border-bottom-color: #4facfe;
+    }
+
+    .producto-header.papas {
+        border-bottom-color: #2ed573;
+    }
+
+.producto-body {
+    padding: 25px;
+}
+
+/* Imagen del producto */
+.producto-imagen {
+    max-height: 120px;
+    width: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+    .producto-imagen:hover {
+        transform: scale(1.1);
+    }
+
+.precio-producto {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2ed573;
+    margin-top: 12px;
+}
+
+/* Secciones de personalización */
+.personalizacion-section {
+    margin-bottom: 25px;
+}
+
+    .personalizacion-section h6 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .personalizacion-section.extras h6 {
+        color: #ffd93d;
+    }
+
+    .personalizacion-section.tamanio h6 {
+        color: #4facfe;
+    }
+
+    .personalizacion-section.opciones h6 {
+        color: #2ed573;
+    }
+
+/* Checkboxes y radios mejorados */
+.opcion-personalizada {
+    background: #f7fafc;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+    .opcion-personalizada:hover {
+        background: #edf2f7;
+        border-color: #cbd5e0;
+    }
+
+    .opcion-personalizada input:checked ~ label {
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .opcion-personalizada.selected {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 100%);
+        border-color: #ffd93d;
+    }
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.form-check-label {
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Select mejorado */
+.form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+    .form-select:focus {
+        border-color: #2ed573;
+        box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.1);
+    }
+
+/* Textarea notas */
+.notas-producto {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+    .notas-producto:focus {
+        border-color: #2ed573;
+        box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.1);
+    }
+
+/* Resumen final */
+.resumen-final-card {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    border-radius: 20px;
+    padding: 30px;
+    color: white;
+    margin-top: 30px;
+}
+
+    .resumen-final-card h5 {
+        color: white;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .resumen-final-card .precio-final {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+/* Botón agregar combo */
+.btn-agregar-combo {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    border: none;
+    color: white;
+    padding: 20px 40px;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(46, 213, 115, 0.3);
+}
+
+    .btn-agregar-combo:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(46, 213, 115, 0.4);
+        color: white;
+    }
+
+/* Badge precio extra */
+.badge-precio-extra {
+    background: linear-gradient(135deg, #ffd93d 0%, #f6c741 100%);
+    color: #856404;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+/* Animación de actualización */
+@keyframes pulseGreen {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.precio-actualizado {
+    animation: pulseGreen 0.4s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .combo-header h4 {
+        font-size: 1.4rem;
+    }
+
+    .precio-flotante {
+        margin-bottom: 20px;
+    }
+
+    .precio-display {
+        font-size: 2rem;
+    }
+
+    .producto-imagen {
+        max-height: 80px;
+    }
+
+    .btn-agregar-combo {
+        font-size: 1.1rem;
+        padding: 15px 30px;
+    }
+}
+
+.personalizacion-section.obligatorios {
+    background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #fca5a5;
+}
+
+.ingrediente-obligatorio {
+    background: white;
+    border: 2px solid #ef4444;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+    .ingrediente-obligatorio .form-check-input:disabled {
+        opacity: 0.8;
+        cursor: not-allowed;
+    }
+
+    .ingrediente-obligatorio .form-check-label {
+        cursor: not-allowed;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+
+/* Ingredientes Opcionales Base */
+.personalizacion-section.opcionales-base {
+    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #93c5fd;
+}
+
+.ingrediente-opcional {
+    background: white;
+    border: 2px solid #60a5fa;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+    .ingrediente-opcional:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .ingrediente-opcional .form-check-input:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .ingrediente-opcional .form-check-label {
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+/* Ingredientes Extra (actualizar si es necesario) */
+.personalizacion-section.extras {
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #fcd34d;
+}
+
+/* Animación para checkboxes */
+.form-check-input {
+    transition: all 0.2s ease;
+}
+
+    .form-check-input:checked {
+        transform: scale(1.1);
+    }
+
+/* Badges mejorados */
+.badge {
+    padding: 4px 8px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.badge-precio-extra {
+    background: #fbbf24;
+    color: #78350f;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+/* Títulos de secciones */
+.personalizacion-section h6 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .personalizacion-section h6 i {
+        font-size: 1.1em;
+    }
+
+/* Descripción de secciones */
+.personalizacion-section .text-muted.small {
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .personalizacion-section {
+        padding: 15px;
+    }
+
+    .ingrediente-obligatorio,
+    .ingrediente-opcional {
+        padding: 8px;
+    }
+}

@@ -1,0 +1,759 @@
+﻿/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 80px 0;
+    margin-bottom: 60px;
+    border-radius: 0 0 50px 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+    .hero-section h1 {
+        color: white;
+        font-weight: 700;
+        font-size: 3.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        animation: fadeInDown 0.8s ease-out;
+    }
+
+    .hero-section p {
+        color: rgba(255,255,255,0.95);
+        font-size: 1.3rem;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Section Headers */
+.section-header {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+}
+
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60%;
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 10px;
+    }
+
+    .section-header i {
+        font-size: 2rem;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+/* Product Cards - MEJORADO PARA MOBILE */
+.product-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .product-card:hover::before {
+        opacity: 1;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+    }
+
+.product-image-container {
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    height: 220px;
+}
+
+    .product-image-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.05) 100%);
+        pointer-events: none;
+    }
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, filter 0.3s ease;
+    filter: brightness(1);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.15);
+    filter: brightness(1.1);
+}
+
+.product-card .card-body {
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.product-card .card-title {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    min-height: 28px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.product-card .card-text {
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 55px;
+    max-height: 55px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 16px;
+    flex-grow: 1;
+}
+
+/* Price Tag - MEJORADO */
+.price-tag {
+    font-size: 1.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 12px 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Card Actions - MEJORADO */
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+/* Combo Cards - MEJORADO */
+.combo-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(46, 213, 115, 0.12);
+    height: 100%;
+    background: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+    .combo-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(46, 213, 115, 0.2), rgba(123, 237, 159, 0.2));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .combo-card:hover::before {
+        opacity: 1;
+    }
+
+    .combo-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(46, 213, 115, 0.2);
+    }
+
+.combo-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.combo-body {
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.combo-card .card-title {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    min-height: 28px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.combo-card .card-text {
+    color: #718096;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 55px;
+    max-height: 55px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: auto;
+    flex-grow: 1;
+}
+
+/* Buttons - MEJORADO PARA MOBILE */
+.btn-custom-primary,
+.btn-custom-info,
+.btn-custom-success,
+.btn-custom-outline {
+    border: none;
+    color: white;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+
+.btn-custom-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-custom-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+.btn-custom-success {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+}
+
+.btn-custom-outline {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+    padding: 12px 16px;
+    box-shadow: none;
+}
+
+.btn-custom-primary:hover,
+.btn-custom-info:hover,
+.btn-custom-success:hover {
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-custom-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* RESPONSIVE DESIGN - MEJORADO */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+
+    .hero-section {
+        padding: 50px 0;
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+
+        .section-header i {
+            font-size: 1.5rem;
+        }
+
+    .product-image-container {
+        height: 180px;
+    }
+
+    .price-tag {
+        font-size: 1.5rem;
+        margin: 10px 0;
+    }
+
+    .product-card .card-body,
+    .combo-body {
+        padding: 20px 16px;
+    }
+
+    .product-card .card-title,
+    .combo-card .card-title {
+        font-size: 1.1rem;
+        min-height: 25px;
+        margin-bottom: 8px;
+    }
+
+    .product-card .card-text,
+    .combo-card .card-text {
+        font-size: 0.85rem;
+        min-height: 50px;
+        max-height: 50px;
+        line-height: 1.5;
+    }
+
+    .combo-badge {
+        top: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-section {
+        padding: 40px 15px;
+        border-radius: 0 0 25px 25px;
+    }
+
+    .product-image-container {
+        height: 160px;
+    }
+
+    .product-card,
+    .combo-card {
+        border-radius: 16px;
+        margin-bottom: 1rem;
+    }
+
+        .product-card:hover,
+        .combo-card:hover {
+            transform: translateY(-4px);
+        }
+
+    .price-tag {
+        font-size: 1.4rem;
+    }
+
+    .btn-custom-primary,
+    .btn-custom-info,
+    .btn-custom-success,
+    .btn-custom-outline {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+    }
+
+    .card-actions {
+        gap: 8px;
+    }
+
+    /* Asegurar que las cartas tengan el mismo alto en móvil */
+    .row-cols-md-3 > * {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Grid improvements for mobile */
+@media (max-width: 768px) {
+    .row-cols-1 > * {
+        margin-bottom: 1rem;
+    }
+
+    /* Espaciado uniforme entre cartas */
+    .g-4 {
+        --bs-gutter-y: 1rem;
+    }
+}
+
+/* Loading Animation */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Price Tag - AGREGADO */
+.price-tag {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    padding: 0;
+}
+
+/* Buttons */
+.btn-custom-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-custom-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+
+.btn-custom-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-custom-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+        color: white;
+    }
+
+/* Botón Success para Combos - AGREGADO */
+.btn-custom-success {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-custom-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(46, 213, 115, 0.6);
+        color: white;
+    }
+
+.btn-custom-outline {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-custom-outline:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+/* Combo Cards */
+.combo-card {
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 25px rgba(46, 213, 115, 0.12);
+    height: 100%;
+    background: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+    .combo-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 24px;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(46, 213, 115, 0.2), rgba(123, 237, 159, 0.2));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        pointer-events: none;
+    }
+
+    .combo-card:hover::before {
+        opacity: 1;
+    }
+
+    .combo-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 45px rgba(46, 213, 115, 0.2);
+    }
+
+        .combo-card:hover .product-image {
+            transform: scale(1.15);
+            filter: brightness(1.1);
+        }
+
+.combo-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    z-index: 10;
+    box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.combo-body {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.combo-card .card-title {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    min-height: 32px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.combo-card .card-text {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    min-height: 65px;
+    max-height: 65px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: auto;
+}
+
+.combo-card .price-tag {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.combo-card .btn {
+    margin-top: 0;
+}
+
+/* Container */
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero-section p {
+        font-size: 1.1rem;
+    }
+
+    .hero-section {
+        padding: 50px 0;
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+    }
+
+        .section-header i {
+            font-size: 1.5rem;
+        }
+
+    .product-image-container {
+        height: 240px;
+    }
+
+    @media (max-width: 576px) {
+        .hero-section h1 {
+            font-size: 1.8rem;
+        }
+
+        .hero-section {
+            padding: 40px 15px;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .product-card .card-body {
+            padding: 20px;
+        }
+
+        .btn-custom-primary,
+        .btn-custom-info,
+        .btn-custom-success,
+        .btn-custom-outline {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Loading Animation */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }

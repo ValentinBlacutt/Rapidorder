@@ -1,0 +1,46 @@
+﻿/* Ajustes para móvil */
+@@media (max-width: 767.98px) {
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    h2.h4 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Ajustes para tablet */
+@@media (min-width: 768px) and (max-width: 991.98px) {
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Input group y select normales en desktop */
+@@media (min-width: 768px) {
+    .input-group-md-normal {
+        font-size: 1rem !important;
+    }
+
+        .input-group-md-normal .form-control,
+        .input-group-md-normal .btn,
+        .input-group-md-normal .input-group-text {
+            padding: 0.375rem 0.75rem !important;
+            font-size: 1rem !important;
+        }
+
+    .form-select-md-normal {
+        padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+        font-size: 1rem !important;
+    }
+
+    .btn-md-normal {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+/* Borde colorido según estado */
+.border-4 {
+    border-width: 4px !important;
+}

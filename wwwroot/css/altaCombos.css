@@ -1,0 +1,90 @@
+﻿/* Ajustes para móvil */
+@@media (max-width: 767.98px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .card-header {
+        padding: 1rem;
+    }
+
+        .card-header h4, .card-header h5 {
+            font-size: 1.1rem;
+        }
+    /* Mejorar cards de productos */
+    .product-card, .bebida-fija-card {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+        .product-card:hover, .bebida-fija-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    /* Form switches más grandes en móvil */
+    .form-switch .form-check-input {
+        width: 2.5em;
+        height: 1.25em;
+    }
+    /* Inputs más legibles */
+    .form-control, .form-select {
+        font-size: 16px; /* Previene zoom en iOS */
+    }
+    /* Badges más compactos */
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.25em 0.5em;
+    }
+    /* Espaciado mejorado */
+    .row.g-3 > [class*="col-"] {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Ajustes para tablet */
+@@media (min-width: 768px) and (max-width: 991.98px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Botón normal en desktop */
+@@media (min-width: 768px) {
+    .btn-md-normal {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+/* Estados visuales para selecciones */
+.product-card.border-success {
+    border-color: #198754 !important;
+    background-color: rgba(25, 135, 84, 0.05);
+}
+
+.bebida-fija-card.border-warning {
+    border-color: #ffc107 !important;
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+/* Inputs de recargo en móvil */
+.recargo-input-mobile {
+    text-align: center;
+}
+
+/* Mejoras de accesibilidad */
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Scroll suave para formularios largos */
+@@media (max-width: 575.98px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+}

@@ -1,0 +1,89 @@
+﻿/* Estilos para el dashboard responsive */
+.card {
+    border: 1px solid rgba(0,0,0,0.125);
+    transition: all 0.2s ease;
+}
+
+    .card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+/* Estadísticas cards */
+@@media (max-width: 767px) {
+    .card h4 {
+        font-size: 1.25rem;
+    }
+
+    .card .small {
+        font-size: 0.75rem;
+    }
+
+    .card .fa-2x {
+        font-size: 1.5rem !important;
+    }
+}
+
+@@media (max-width: 575px) {
+    .card h4 {
+        font-size: 1.1rem;
+    }
+
+    .card .fa-2x {
+        font-size: 1.3rem !important;
+    }
+    /* Cards de pedidos en móvil */
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .flex-fill {
+        min-height: 38px;
+    }
+}
+
+/* Mejoras para tablets */
+@@media (min-width: 768px) and (max-width: 991px) {
+    .card-body {
+        padding: 1.25rem !important;
+    }
+}
+
+/* Badges más compactos */
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+/* Cajas de información en cards móviles */
+.bg-light.rounded {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef;
+}
+
+/* Efectos hover para botones */
+.btn {
+    transition: all 0.2s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+/* Mejora de accesibilidad */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}

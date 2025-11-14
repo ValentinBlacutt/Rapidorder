@@ -1,0 +1,286 @@
+﻿/* Personalización específica para papas */
+.papas-header {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    padding: 30px;
+    border-radius: 20px 20px 0 0;
+    color: white;
+    margin-bottom: 0;
+}
+
+    .papas-header h4 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+/* Imagen de las papas */
+.papas-image-container {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.papas-image {
+    max-height: 200px;
+    width: auto;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+    .papas-image:hover {
+        transform: scale(1.05) rotate(-2deg);
+    }
+
+.papas-info {
+    text-align: center;
+    margin-top: 20px;
+}
+
+    .papas-info h5 {
+        color: #2ed573;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+/* Tarjetas de tamaño */
+.tamanio-papas-card {
+    border-radius: 15px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    border: 3px solid #e2e8f0;
+    background: white;
+    height: 100%;
+    overflow: hidden;
+}
+
+    .tamanio-papas-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(46, 213, 115, 0.2);
+        border-color: #2ed573;
+    }
+
+    .tamanio-papas-card.selected {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border-color: #2ed573;
+        box-shadow: 0 12px 30px rgba(46, 213, 115, 0.3);
+    }
+
+    .tamanio-papas-card .card-body {
+        padding: 25px;
+    }
+
+.tamanio-icon-papas {
+    font-size: 3rem;
+    color: #2ed573;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.tamanio-papas-card.selected .tamanio-icon-papas {
+    transform: scale(1.2);
+    color: #27ae60;
+}
+
+.tamanio-label-papas {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 10px 0;
+}
+
+.tamanio-precio-papas {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Tarjetas de sal */
+.sal-card {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 3px solid #e2e8f0;
+    background: white;
+    height: 100%;
+    padding: 30px;
+}
+
+    .sal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(255, 193, 7, 0.2);
+        border-color: #ffd93d;
+    }
+
+    .sal-card.selected {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 100%);
+        border-color: #ffd93d;
+        box-shadow: 0 12px 25px rgba(255, 193, 7, 0.3);
+    }
+
+.sal-icon {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.sal-card.selected .sal-icon {
+    transform: scale(1.15);
+}
+
+.sal-card.con-sal .sal-icon {
+    color: #2ed573;
+}
+
+.sal-card.sin-sal .sal-icon {
+    color: #ff6b6b;
+}
+
+.sal-label {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* Select de salsas */
+.salsa-section {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+    .salsa-section h5 {
+        color: #4facfe;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+.salsa-select {
+    border: 3px solid #4facfe;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+    .salsa-select:focus {
+        border-color: #0288d1;
+        box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.2);
+        transform: scale(1.02);
+    }
+
+/* Botón agregar */
+.btn-agregar-papas {
+    background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+    border: none;
+    color: white;
+    padding: 18px 30px;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(46, 213, 115, 0.3);
+}
+
+    .btn-agregar-papas:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(46, 213, 115, 0.4);
+        color: white;
+    }
+
+/* Resumen */
+.resumen-papas {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.resumen-item-papas {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+}
+
+    .resumen-item-papas:last-child {
+        border-bottom: none;
+    }
+
+    .resumen-item-papas i {
+        color: #2ed573;
+        font-size: 1.2rem;
+    }
+
+    .resumen-item-papas strong {
+        color: #2d3748;
+        min-width: 80px;
+    }
+
+.badge-papas {
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Animación de selección */
+@keyframes pulseGreenPapas {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7);
+    }
+
+    50% {
+        box-shadow: 0 0 0 15px rgba(46, 213, 115, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 213, 115, 0);
+    }
+}
+
+.tamanio-papas-card.selected, .sal-card.selected {
+    animation: pulseGreenPapas 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .papas-header h4 {
+        font-size: 1.4rem;
+    }
+
+    .papas-image {
+        max-height: 150px;
+    }
+
+    .tamanio-icon-papas, .sal-icon {
+        font-size: 2rem;
+    }
+
+    .tamanio-label-papas, .sal-label {
+        font-size: 1rem;
+    }
+
+    .tamanio-precio-papas {
+        font-size: 1.2rem;
+    }
+
+    .btn-agregar-papas {
+        font-size: 1rem;
+        padding: 15px 20px;
+    }
+}

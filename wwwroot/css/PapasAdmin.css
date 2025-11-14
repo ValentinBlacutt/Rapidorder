@@ -1,0 +1,102 @@
+﻿/* Ajustes para móvil */
+@@media (max-width: 767.98px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .card-header {
+        padding: 1rem;
+    }
+
+        .card-header h4 {
+            font-size: 1.1rem;
+        }
+    /* Mejorar aspecto de las cards en móvil */
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+    }
+    /* Ajustar imágenes en móvil */
+    .img-thumbnail {
+        border-radius: 0.375rem;
+    }
+    /* Botones más táctiles */
+    .btn-sm {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Ajustes para tablet */
+@@media (min-width: 768px) and (max-width: 991.98px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Botón normal en desktop */
+@@media (min-width: 768px) {
+    .btn-md-normal {
+        padding: 0.375rem 0.75rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+/* Mejoras visuales generales */
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.border-0 {
+    border: none !important;
+}
+
+/* Efecto hover en cards */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+/* Badges más legibles */
+.badge {
+    font-weight: 500;
+}
+
+/* Precios con mejor contraste */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.text-success {
+    color: #198754 !important;
+    font-weight: 600;
+}
+
+/* Cajas de precios responsivas */
+.border.rounded {
+    transition: all 0.2s ease;
+}
+
+    .border.rounded:hover {
+        background-color: #e9ecef !important;
+        transform: scale(1.02);
+    }
+
+/* Ajustes para móviles muy pequeños */
+@@media (max-width: 575.98px) {
+    .img-thumbnail {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    .flex-fill {
+        min-height: 38px;
+    }
+
+    .text-muted.small {
+        font-size: 0.8rem;
+    }
+}

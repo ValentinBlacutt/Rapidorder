@@ -1,0 +1,130 @@
+﻿
+/* Botones del formulario - Responsive */
+.form-buttons-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Layout base para desktop */
+.form-buttons-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Móvil: botones en columna */
+@@media (max-width: 767.98px) {
+    .form-buttons-container {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+    }
+
+        .form-buttons-container .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .form-buttons-container .btn-secondary {
+            order: 2;
+        }
+
+        .form-buttons-container .btn-primary {
+            order: 1;
+        }
+}
+
+/* Tablet: ajustes menores */
+@@media (min-width: 768px) and (max-width: 991.98px) {
+    .form-buttons-container {
+        gap: 0.875rem;
+    }
+
+        .form-buttons-container .btn {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.95rem;
+        }
+}
+
+/* Efectos hover y focus para mejor UX */
+.form-buttons-container .btn {
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px; /* Altura mínima para touch */
+}
+
+    .form-buttons-container .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-buttons-container .btn:active {
+        transform: translateY(0);
+    }
+
+/* Botón primario específico */
+.form-buttons-container .btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border: none;
+    min-width: 140px;
+}
+
+    .form-buttons-container .btn-primary:hover {
+        background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+
+/* Botón secundario específico */
+.form-buttons-container .btn-secondary {
+    background: #6c757d;
+    border: none;
+    min-width: 120px;
+}
+
+    .form-buttons-container .btn-secondary:hover {
+        background: #5a6268;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+/* Iconos dentro de botones */
+.form-buttons-container .btn i {
+    margin-right: 0.5rem;
+    font-size: 0.9em;
+}
+
+/* Estados de carga */
+.form-buttons-container .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Mejora de accesibilidad */
+@@media (prefers-reduced-motion: reduce) {
+    .form-buttons-container .btn {
+        transition: none;
+    }
+}
+
+/* High contrast mode */
+@@media (prefers-contrast: high) {
+    .form-buttons-container .btn {
+        border: 2px solid;
+    }
+
+    .form-buttons-container .btn-primary {
+        border-color: #0d6efd;
+    }
+
+    .form-buttons-container .btn-secondary {
+        border-color: #6c757d;
+    }
